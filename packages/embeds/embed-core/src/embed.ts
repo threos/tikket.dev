@@ -981,7 +981,7 @@ class CalApi {
 
   floatingButton({
     calLink,
-    buttonText = "Book my Cal",
+    buttonText = "Book my Tikket",
     hideButtonIcon = false,
     attributes,
     buttonPosition = "bottom-right",

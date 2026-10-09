@@ -14,7 +14,7 @@ export const metadata = {
   category: "payment",
   categories: ["payment"],
   logo: "icon.svg",
-  publisher: "Cal.diy",
+  publisher: "Tikket",
   title: "Stripe",
   type: "stripe_payment",
   url: "https://cal.com/",

@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "web",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [".yarn/releases/yarn-4.12.0.cjs", "dev"],
+      "port": 3000
+    }
+  ]
+}

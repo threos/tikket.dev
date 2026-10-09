@@ -150,7 +150,7 @@
   "apply_to_all_event_types": "Piemēroties visiem, ieskaitot arī nākotnes notikumu veidus",
   "date_and_time": "Datums un laiks",
   "email_reminder_upcoming_event_notice": "Šis ir atgādinājums par jūsu gaidāmo pasākumu.",
-  "email_reminder_triggered_by_workflow": "Šo atgādinājumu ir iedarbinājis Cal darbplūsma.",
+  "email_reminder_triggered_by_workflow": "Šo atgādinājumu ir iedarbinājis Tikket darbplūsma.",
   "event_upper_case": "Notikums",
   "scheduling_by": "Ieplānoja",
   "experience_review_prompt": "Kāda bija jūsu pēdējā pieredze?",

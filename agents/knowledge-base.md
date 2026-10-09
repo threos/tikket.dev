@@ -68,7 +68,7 @@ Refer to the DataTable guide at `packages/features/data-table/GUIDE.md` for impl
 
 ### Round-Robin Scheduling
 
-Reuse existing code in `packages/features/bookings/lib/getLuckyUser.ts` which handles:
+The team UI was removed in Cal.diy, but the round-robin engine survives. See "State of team features in the fork" in `AGENTS.md`. Reuse existing code in `packages/features/bookings/lib/getLuckyUser.ts` which handles:
 - Weight-based selection
 - Priority ranking
 - Round-robin fairness algorithms
@@ -85,10 +85,6 @@ The OpenAPI specification at `docs/api-reference/v2/openapi.json` is auto-genera
 
 To make persistent changes to API documentation, use NestJS decorators (`@ApiQuery`, `@ApiOperation`, etc.) in the controller files at `apps/api/v2/src/modules/*/controllers/*.controller.ts`.
 
-### Workflows vs Webhooks
+### Workflows
 
-Workflows and webhooks are two completely separate features in Cal.diy with different implementations and file structures:
-- Workflow constants: `packages/features/ee/workflows/lib/constants.ts`
-- NOT in the webhooks directory
-
-When working on workflow triggers, do not reference or use webhook trigger implementations - they are distinct systems.
+The Workflows feature (`packages/features/ee/workflows`) was removed in Cal.diy and does not exist in Tikket. Webhooks (`packages/features/webhooks`) are a separate, still-present system. Do not use webhook trigger code to rebuild workflows.

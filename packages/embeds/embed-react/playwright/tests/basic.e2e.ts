@@ -32,7 +32,7 @@ test.describe("React Embed", () => {
       await page.waitForLoadState();
       await embeds.gotoPlayground({ url: "/floating.html", calNamespace });
 
-      await page.click("text=Book my Cal");
+      await page.click("text=Book my Tikket");
 
       const embedIframe = await getEmbedIframe({ calNamespace, page, pathname: "/pro" });
       await expect(embedIframe).toBeEmbedCalLink(calNamespace, embeds.getActionFiredDetails, {

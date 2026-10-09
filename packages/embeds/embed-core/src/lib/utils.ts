@@ -9,7 +9,7 @@ export const getErrorString = ({
 }) => {
   const defaultErrorMessage = "Something went wrong.";
   if (errorCode === "404") {
-    errorMessage = errorMessage ?? "Cal Link seems to be wrong.";
+    errorMessage = errorMessage ?? "Tikket link seems to be wrong.";
     return `Error Code: 404. ${errorMessage}`;
   } else if (errorCode === "routerError") {
     errorMessage = errorMessage ?? defaultErrorMessage;

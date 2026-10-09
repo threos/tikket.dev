@@ -199,7 +199,7 @@
   "apply_to_all_event_types": "எல்லா நிகழ்வுகள் தொடர்புகளிலும் பயன்படுத்துங்கள், எதிர்கால நிகழ்வுகள் தொடர்புகள் உட்பட.",
   "date_and_time": "தேதி மற்றும் நேரம்",
   "email_reminder_upcoming_event_notice": "இது உங்கள் வரவிருக்கும் நிகழ்வைப் பற்றிய நினைவூட்டல்.",
-  "email_reminder_triggered_by_workflow": "இந்த நினைவூட்டல் Cal-ல் உள்ள ஒரு Workflow மூலம் தூண்டப்பட்டது.",
+  "email_reminder_triggered_by_workflow": "இந்த நினைவூட்டல் Tikket-ல் உள்ள ஒரு Workflow மூலம் தூண்டப்பட்டது.",
   "event_upper_case": "நிகழ்வு",
   "scheduling_by": "ஷெடியூல் செய்தவர்",
   "experience_review_prompt": "உங்களது சமீபத்திய அனுபவம் எப்படி இருந்தது?",
@@ -208,5 +208,5 @@
   "meeting_not_joined_question": "கூட்டத்தில் சேரவில்லையா?",
   "reschedule_cta_short": "இங்கே மீண்டும் ஷெடியூல் செய்யவும்.",
   "you_and_conjunction": "நீங்கள் &",
-  "email_survey_triggered_by_workflow": "இந்த ஆய்வு Cal-ல் உள்ள பணிப்பாய்வு மூலம் தூண்டப்பட்டது."
+  "email_survey_triggered_by_workflow": "இந்த ஆய்வு Tikket-ல் உள்ள பணிப்பாய்வு மூலம் தூண்டப்பட்டது."
 }

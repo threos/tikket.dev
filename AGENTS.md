@@ -1,6 +1,45 @@
-# Cal.diy Development Guide for AI Agents
+# CLAUDE.md
 
-You are a senior Cal.diy engineer working in a Yarn/Turbo monorepo. You prioritize type safety, security, and small, reviewable diffs.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+> `CLAUDE.md` is a symlink to `AGENTS.md`, and `.claude/rules`, `.claude/skills`, `.cursor/rules` and `.cursor/skills` are symlinks into `agents/`. Edit the files in `agents/` and `AGENTS.md`, not the symlinks.
+
+# Tikket Development Guide for AI Agents
+
+You are a senior engineer on **Tikket** (tikket.dev) working in a Yarn/Turbo monorepo. You prioritize type safety, security, and small, reviewable diffs.
+
+## What Tikket is
+
+Tikket is a fork of [Cal.diy](https://github.com/calcom/cal.diy), the MIT-licensed community edition of Cal.com. Cal.diy **removed** Cal.com's enterprise features (Teams, Organizations, Insights, Workflows, Routing Forms, SSO). Tikket's goal is to add **team scheduling features back** as MIT open source — team management and assignment, and routing strategies such as round-robin — and to offer an affordable hosted version.
+
+Most docs, rules and package names still say "Cal.diy" / `@calcom/*`. That is expected. Do not mass-rename packages, imports or the `calendso` database; it breaks the build and makes upstream merges painful.
+
+### State of team features in the fork (as inherited)
+
+Cal.diy stripped the team **UI and tRPC/API surface** but kept most of the **data model and booking engine**. Before you build a team feature, check what already exists:
+
+| Layer | Status | Where |
+|-------|--------|-------|
+| Schema | Kept: `Team`, `Membership` (`MembershipRole`), `Host` (`isFixed`, `priority`, `weight`, `groupId`), `HostGroup`, `HostLocation`, `EventType.schedulingType` (`ROUND_ROBIN` / `COLLECTIVE` / `MANAGED`), `Team.rrResetInterval` / `rrTimestampBasis`, `Attribute` | `packages/prisma/schema.prisma` |
+| Round-robin selection | Kept: weights, priorities, fairness, host groups | `packages/features/bookings/lib/getLuckyUser.ts`, DI in `packages/features/di/modules/LuckyUser.ts` |
+| Qualified hosts / host filtering | Kept | `packages/features/di/modules/QualifiedHosts.ts`, `FilterHosts.ts`, `packages/features/host/` |
+| Team booking flow | Kept: `isTeamEventType`, fixed + RR users, lucky-user pools | `packages/features/bookings/lib/service/RegularBookingService.ts`, `handleNewBooking/loadAndValidateUsers.ts` |
+| Team availability aggregation | Kept | `packages/features/availability/lib/getAggregatedAvailability/` |
+| Assignment reason | Kept (repository only) | `packages/features/assignment-reason/` |
+| Membership | Repositories/services only | `packages/features/membership/` |
+| API v2 | Partial: `teams`, `teams/event-types`, `memberships`, `organizations` modules exist | `apps/api/v2/src/modules/` |
+| tRPC | **Removed**: no `teams` router under `packages/trpc/server/routers/viewer/` | — |
+| Web UI | **Removed**: no team settings pages, no `/team/[slug]` booking page (only `[user]` and `d/[link]` under `apps/web/app/(booking-page-wrapper)/`), no event-type assignment tab | `apps/web/modules/`, `apps/web/app/` |
+| Routing Forms / Workflows (`packages/features/ee/`) | **Removed entirely** | — |
+
+The seed script (`scripts/seed.ts`, run by `yarn dx` / `yarn db-seed`) still creates teams and `ROUND_ROBIN` event types, so you can test the booking engine locally.
+
+### Guidance for Tikket work
+
+- Reuse and extend the kept engine (`getLuckyUser`, qualified hosts, `Host`/`HostGroup`) instead of writing a new assignment algorithm. Add new routing strategies with the factory pattern ([patterns-factory-pattern](agents/rules/patterns-factory-pattern.md)), not as more `if (schedulingType === ...)` branches inside `RegularBookingService`.
+- When you restore a feature that exists in upstream Cal.com, read the upstream implementation for reference, but write it to the rules in this file (repositories + DI services, DTOs, `select`). Do not copy code from Cal.com's `ee/` directories: it is under a commercial license, not MIT.
+- Keep Tikket-specific code in new, clearly-named folders and files where you can, so that merging updates from upstream Cal.diy stays easy.
+- Hosted-version concerns (billing, plan limits) must stay optional, so self-hosters can run the open-source edition without them.
 
 ## Do
 
@@ -84,6 +123,10 @@ yarn type-check:ci --force  # Type check (always run before pushing)
 yarn biome check --write .  # Lint and format
 TZ=UTC yarn test            # Run unit tests
 yarn prisma generate        # Regenerate types after schema changes
+yarn dx                     # Start Postgres in Docker, migrate, seed, run web app
+yarn dev                    # Run web app only (needs DB already set up)
+TZ=UTC yarn vitest run packages/features/bookings/lib/getLuckyUser.test.ts      # Single test file
+TZ=UTC yarn vitest run <file> -t "<test name>"                                  # Single test
 ```
 
 
@@ -127,7 +170,9 @@ packages/lib/                # Shared utilities
 - Database schema: `packages/prisma/schema.prisma`
 - tRPC routers: `packages/trpc/server/routers/`
 - Translations: `packages/i18n/locales/en/common.json`
-- Workflow constants: `packages/features/ee/workflows/lib/constants.ts`
+- Round-robin / host selection: `packages/features/bookings/lib/getLuckyUser.ts`
+- Booking service (team + individual): `packages/features/bookings/lib/service/RegularBookingService.ts`
+- DI modules and containers: `packages/features/di/modules/`, `packages/features/di/containers/`
 
 ## Tech Stack
 

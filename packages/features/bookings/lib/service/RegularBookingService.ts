@@ -2519,7 +2519,7 @@ async function handler(
       bookingInfo: {
         name: fullName,
         email: bookerEmail,
-        eventName: "Cal.diy lead",
+        eventName: "Tikket lead",
       },
       isTeamEventType,
     });
