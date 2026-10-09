@@ -1,6 +1,6 @@
 import type React from "react";
-
-import { CAL_URL, LOGO, LOGO_DARK, WEBAPP_URL } from "./constants";
+import { TIKKET_MARK_PATH, TIKKET_MARK_VIEWBOX } from "./brand/tikketMark";
+import { APP_NAME, CAL_URL, LOGO, LOGO_DARK, WEBAPP_URL } from "./constants";
 
 // Ensures tw prop is typed.
 declare module "react" {
@@ -38,8 +38,8 @@ export interface ScreenshotImageProps {
 
 interface WrapperProps {
   children: React.ReactNode;
-  variant?: "light" | "dark";
-  rotateBackground?: boolean;
+  /** Short label shown top-right, opposite the lockup. */
+  corner?: React.ReactNode;
 }
 
 const joinMultipleNames = (names: string[] = []) => {
@@ -51,24 +51,24 @@ const makeAbsoluteUrl = (url: string) => (/^https?:\/\//.test(url) ? url : `${CA
 
 const OG_ASSETS = {
   meeting: {
-    id: "meeting-og-image-v1", // Bump version when changing Meeting component structure/styling
+    id: "meeting-og-image-v2", // Bump version when changing Meeting component structure/styling
     logo: LOGO,
-    logoWidth: "350",
-    avatarSize: "160",
+    logoWidth: "163",
+    avatarSize: "136",
     variant: "dark" as const,
   },
   app: {
-    id: "app-og-image-v1", // Bump version when changing App component structure/styling
+    id: "app-og-image-v2", // Bump version when changing App component structure/styling
     logo: LOGO,
-    logoWidth: "150",
-    iconSize: "172",
-    variant: "light" as const,
+    logoWidth: "163",
+    iconSize: "96",
+    variant: "dark" as const,
   },
   generic: {
-    id: "generic-og-image-v1", // Bump version when changing Generic component structure/styling
+    id: "generic-og-image-v2", // Bump version when changing Generic component structure/styling
     logo: LOGO_DARK,
-    logoWidth: "350",
-    variant: "light" as const,
+    logoWidth: "163",
+    variant: "dark" as const,
   },
 };
 
@@ -159,19 +159,130 @@ export const constructGenericImage = async ({ title, description }: GenericImage
   return encodeURIComponent(`/api/social/og/image?${params.toString()}`);
 };
 
-const Wrapper = ({ children, variant = "light", rotateBackground }: WrapperProps) => (
-  <div tw="flex w-full h-full">
-    <img
-      tw="flex absolute left-0 top-0 w-full h-[110%]"
-      style={rotateBackground ? { transform: "rotate(180deg)" } : undefined}
-      src={`${WEBAPP_URL}/social-bg-${variant}-lines.jpg`}
-      alt="background"
-      width="1200"
-      height="600"
-    />
-    <div tw="flex flex-col w-full h-full px-[80px] py-[70px] items-start justify-center">{children}</div>
+// Satori (the renderer behind /api/social/og/image) needs explicit flex layout on every
+// element with several children, explicit sizes for images, and nowrap + ellipsis for
+// single-line truncation. Styles are inline for that reason.
+const OG = {
+  width: 1200,
+  height: 630,
+  padX: 72,
+  padY: 64,
+  bg: "#141414",
+  fg: "#FFFFFF",
+  muted: "#A3A3A3",
+  surface: "#1C1C1C",
+  border: "#2A2A2A",
+  avatarColors: ["#3B5BDB", "#C2410C", "#15803D"],
+} as const;
+
+const fontCal = { fontFamily: "cal", fontWeight: 600 } as const;
+const fontInter = { fontFamily: "inter", fontWeight: 400 } as const;
+
+const singleLine = {
+  whiteSpace: "nowrap",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+} as const;
+
+const Lockup = () => (
+  <img
+    src={`${WEBAPP_URL}/tikket/wordmark-white.svg`}
+    width={163}
+    height={44}
+    alt={APP_NAME}
+    style={{ width: 163, height: 44 }}
+  />
+);
+
+const Watermark = () => (
+  <svg
+    viewBox={TIKKET_MARK_VIEWBOX}
+    width={760}
+    height={760}
+    style={{ position: "absolute", right: -220, top: -60, opacity: 0.05 }}>
+    <path fill={OG.fg} d={TIKKET_MARK_PATH} />
+  </svg>
+);
+
+const Wrapper = ({ children, corner }: WrapperProps) => (
+  <div
+    style={{
+      display: "flex",
+      flexDirection: "column",
+      width: OG.width,
+      height: OG.height,
+      padding: `${OG.padY}px ${OG.padX}px`,
+      backgroundColor: OG.bg,
+      color: OG.fg,
+      position: "relative",
+      overflow: "hidden",
+      ...fontInter,
+    }}>
+    <Watermark />
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <Lockup />
+      {corner ? <div style={{ display: "flex", fontSize: 26, color: OG.muted }}>{corner}</div> : null}
+    </div>
+    {children}
   </div>
 );
+
+const Pill = ({ children }: { children: React.ReactNode }) => (
+  <div
+    style={{
+      display: "flex",
+      alignItems: "center",
+      border: `2px solid ${OG.border}`,
+      borderRadius: 999,
+      padding: "10px 22px",
+      fontSize: 24,
+      color: OG.muted,
+    }}>
+    {children}
+  </div>
+);
+
+const avatarStyle = (size: number) =>
+  ({
+    width: size,
+    height: size,
+    borderRadius: 999,
+    border: `8px solid ${OG.bg}`,
+    marginRight: -28,
+  }) as const;
+
+const Avatar = ({
+  image,
+  name,
+  index,
+  size,
+}: {
+  image?: string;
+  name: string;
+  index: number;
+  size: number;
+}) => {
+  if (image) {
+    return <img src={image} width={size} height={size} alt="" style={avatarStyle(size)} />;
+  }
+  return (
+    <div
+      style={{
+        ...avatarStyle(size),
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: OG.avatarColors[index % OG.avatarColors.length],
+        color: OG.fg,
+        fontSize: 52,
+        ...fontCal,
+      }}>
+      {name.trim().charAt(0).toUpperCase()}
+    </div>
+  );
+};
+
+const stripAppNameSuffix = (title: string) => title.replace(new RegExp(`\\s*\\|\\s*${APP_NAME}$`), "");
 
 /**
  * ⚠️ IMPORTANT: When modifying this component's structure, styling, or visual output,
@@ -180,110 +291,78 @@ const Wrapper = ({ children, variant = "light", rotateBackground }: WrapperProps
  */
 export const Meeting = ({ title, users = [], profile }: MeetingImageProps) => {
   const config = OG_ASSETS.meeting;
+  const avatarSize = Number(config.avatarSize);
 
-  // We filter attendees here based on whether they have an image and filter duplicates.
-  // Users ALWAYS have an image (albeit a gray empty person avatar), so this mainly filters out
-  // any non existing images for dynamic collectives, while at the same time removing them from
-  // the names list, because the profile name of that event is a concatenation of all names.
+  // Hosts shown on the card: the event profile when it has an image (a user page), then the
+  // other hosts of a collective or dynamic event, without duplicates.
   const attendees = (profile.image ? [profile, ...users] : users).filter(
     (value, index, self) => self.findIndex((v) => v.name === value.name) === index
   );
-
-  // Construct list of avatar urls, removes duplicates and empty profile images
-  const avatars = attendees
-    .map((user) => {
-      if ("image" in user && user?.image) return user.image;
-      return null;
-    })
-    .filter(Boolean) as string[];
-
-  // In case there is NO other attendee than the single meeting profile without an image, we add
-  // that name back in here, since the event probably is a round robin event.
-  const names = attendees.length > 0 ? attendees.map((user) => user.name) : [profile.name];
+  const hosts = attendees.length > 0 ? attendees : [profile];
+  const names = hosts.map((host) => host.name);
+  const username = users.length === 1 ? users[0].username : undefined;
+  const host = (() => {
+    try {
+      return new URL(WEBAPP_URL).host;
+    } catch {
+      return undefined;
+    }
+  })();
 
   return (
-    <Wrapper variant={config.variant}>
-      <div tw="h-full flex flex-col justify-start">
-        <div tw="flex items-center justify-center" style={{ fontFamily: "cal", fontWeight: 300 }}>
-          <img src={`${WEBAPP_URL}/${config.logo}`} width={config.logoWidth} alt="Logo" />
-          {avatars.length > 0 && (
-            <div style={{ color: "#111827" }} tw="font-bold text-[92px] mx-8 bottom-2">
-              /
+    <Wrapper corner={<Pill>Book a time</Pill>}>
+      <div style={{ display: "flex", flexDirection: "column", marginTop: "auto" }}>
+        <div style={{ display: "flex", marginBottom: 34 }}>
+          {hosts.slice(0, 3).map((attendee, index) => (
+            <Avatar
+              key={attendee.name}
+              name={attendee.name}
+              image={"image" in attendee && attendee.image ? attendee.image : undefined}
+              index={index}
+              size={avatarSize}
+            />
+          ))}
+          {hosts.length > 3 && (
+            <div
+              style={{
+                ...avatarStyle(avatarSize),
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: OG.surface,
+                color: OG.fg,
+                fontSize: 40,
+                ...fontCal,
+              }}>
+              +{hosts.length - 3}
             </div>
           )}
-          <div tw="flex flex-row">
-            {avatars.slice(0, 3).map((avatar) => (
-              <img
-                tw="rounded-full mr-[-36px] border-[6px] border-[#CDCED2]"
-                key={avatar}
-                src={avatar}
-                alt="Profile"
-                width={config.avatarSize}
-                height={config.avatarSize}
-              />
-            ))}
-            {avatars.length > 3 && (
-              <div
-                tw={`flex items-center justify-center w-[${config.avatarSize}px] h-[${config.avatarSize}px] rounded-full bg-black text-inverted text-[54px] font-bold`}>
-                <span tw="flex top-[-5px] left-[-5px]">+{avatars.length - 3}</span>
-              </div>
-            )}
-          </div>
         </div>
-        <div style={{ color: "#111827" }} tw="relative flex text-[54px] w-full flex-col mt-auto">
-          <div
-            tw="flex w-[1040px] overflow-hidden"
-            style={{
-              whiteSpace: "nowrap",
-              fontFamily: "cal",
-              textOverflow: "ellipsis",
-            }}>
-            Meet {joinMultipleNames(names)}
-          </div>
-          <div
-            tw="flex mt-3 w-[1040px] overflow-hidden"
-            style={{
-              whiteSpace: "nowrap",
-              fontFamily: "inter",
-              textOverflow: "ellipsis",
-            }}>
+        <div
+          style={{
+            display: "flex",
+            width: 1000,
+            fontSize: 64,
+            lineHeight: 1.1,
+            letterSpacing: -1,
+            ...fontCal,
+            ...singleLine,
+          }}>
+          Meet {joinMultipleNames([...names])}
+        </div>
+        <div
+          style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginTop: 16 }}>
+          <div style={{ display: "flex", width: 760, fontSize: 34, color: OG.muted, ...singleLine }}>
             {title}
           </div>
+          {host && username ? (
+            <div style={{ display: "flex", fontSize: 26, color: OG.muted }}>
+              {host}/{username}
+            </div>
+          ) : null}
         </div>
       </div>
     </Wrapper>
-  );
-};
-
-const VisualBlur = ({ logoUrl }: { logoUrl: string }) => {
-  // Making a blur of a dark logo is very ugly. We use the filename to indicate,
-  // when we don't want to render these blurry blob backgrounds.
-  if (logoUrl.indexOf("dark") > -1) return null;
-
-  return (
-    <div tw="flex relative">
-      {/* Blob top left */}
-      <div
-        tw="flex absolute top-[-100px] left-[-100px] w-[400px] h-[400px] opacity-80"
-        style={{
-          filter: "blur(98px)",
-          backgroundColor: "rgba(255, 255, 255, 0.7)",
-          backgroundImage: `url(${WEBAPP_URL}${logoUrl})`,
-          backgroundSize: "400px 400px",
-        }}
-      />
-
-      {/* Blob bottom right */}
-      <div
-        tw="flex absolute top-[230px] left-[660px] w-[630px] h-[630px] opacity-80"
-        style={{
-          filter: "blur(150px)",
-          backgroundColor: "rgba(255, 255, 255, 0.7)",
-          backgroundImage: `url(${WEBAPP_URL}${logoUrl})`,
-          backgroundSize: "630px 630px",
-        }}
-      />
-    </div>
   );
 };
 
@@ -294,33 +373,47 @@ const VisualBlur = ({ logoUrl }: { logoUrl: string }) => {
  */
 export const App = ({ name, description, logoUrl }: AppImageProps) => {
   const config = OG_ASSETS.app;
+  const iconSize = Number(config.iconSize);
 
   return (
-    <Wrapper variant={config.variant}>
-      <img
-        src={`${WEBAPP_URL}/${config.logo}`}
-        width={config.logoWidth}
-        alt="Logo"
-        tw="absolute right-[48px] top-[48px]"
-      />
-
-      <VisualBlur logoUrl={logoUrl} />
-
-      <div tw="flex items-center w-full">
-        <div tw="flex">
-          <img
-            src={`${WEBAPP_URL}${logoUrl}`}
-            alt="App icon"
-            width={config.iconSize}
-            height={config.iconSize}
-          />
+    <Wrapper corner="Apps">
+      <div style={{ display: "flex", flexDirection: "column", marginTop: "auto" }}>
+        <div
+          style={{
+            display: "flex",
+            width: 160,
+            height: 160,
+            borderRadius: 36,
+            backgroundColor: OG.surface,
+            border: `2px solid ${OG.border}`,
+            alignItems: "center",
+            justifyContent: "center",
+            marginBottom: 36,
+          }}>
+          <img src={`${WEBAPP_URL}${logoUrl}`} alt="" width={iconSize} height={iconSize} />
         </div>
-      </div>
-      <div style={{ color: "#111827" }} tw="flex mt-auto w-full flex-col">
-        <div tw="flex text-[64px] mb-7" style={{ fontFamily: "cal", fontWeight: 600 }}>
+        <div
+          style={{
+            display: "flex",
+            width: 1000,
+            fontSize: 68,
+            lineHeight: 1.1,
+            letterSpacing: -1,
+            ...fontCal,
+            ...singleLine,
+          }}>
           {name}
         </div>
-        <div tw="flex text-[36px]" style={{ fontFamily: "inter" }}>
+        <div
+          style={{
+            display: "block",
+            width: 900,
+            marginTop: 16,
+            fontSize: 32,
+            lineHeight: 1.4,
+            color: OG.muted,
+            lineClamp: 2,
+          }}>
           {description}
         </div>
       </div>
@@ -334,22 +427,40 @@ export const App = ({ name, description, logoUrl }: AppImageProps) => {
  * to ensure proper cache invalidation.
  */
 export const Generic = ({ title, description }: GenericImageProps) => {
-  const config = OG_ASSETS.generic;
+  const host = (() => {
+    try {
+      return new URL(WEBAPP_URL).host;
+    } catch {
+      return APP_NAME;
+    }
+  })();
 
   return (
-    <Wrapper variant={config.variant}>
-      <div tw="h-full flex flex-col justify-start">
-        <div tw="flex items-center justify-center" style={{ fontFamily: "cal", fontWeight: 300 }}>
-          <img src={`${WEBAPP_URL}/${config.logo}`} width={config.logoWidth} alt="Logo" />
+    <Wrapper corner={host}>
+      <div style={{ display: "flex", flexDirection: "column", marginTop: "auto" }}>
+        <div
+          style={{
+            display: "block",
+            width: 900,
+            fontSize: 76,
+            lineHeight: 1.08,
+            letterSpacing: -1,
+            ...fontCal,
+            lineClamp: 2,
+          }}>
+          {stripAppNameSuffix(title)}
         </div>
-
-        <div style={{ color: "#111827" }} tw="relative flex text-[54px] w-full flex-col mt-auto">
-          <div tw="flex w-[1040px]" style={{ fontFamily: "cal" }}>
-            {title}
-          </div>
-          <div tw="flex mt-3 w-[1040px]" style={{ fontFamily: "inter" }}>
-            {description}
-          </div>
+        <div
+          style={{
+            display: "block",
+            width: 760,
+            marginTop: 22,
+            fontSize: 32,
+            lineHeight: 1.4,
+            color: OG.muted,
+            lineClamp: 2,
+          }}>
+          {description}
         </div>
       </div>
     </Wrapper>

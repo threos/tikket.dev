@@ -31,7 +31,9 @@ File names in `apps/web/public` and `apps/docs/public` are kept from the Cal.diy
 - `favicon*.png`, `favicon.ico`, `apple-touch-icon.png`, `android-chrome-*.png`: white mark on a dark rounded tile
 - `mstile-*.png`: white mark on transparent, shown on the `TileColor` from `browserconfig.xml`
 - `emails/logo.png`: lockup at 2x for the 70×19 email header
-- `og-image.png`, `video-og-image.png`: social preview images, lockup and tagline on a dark background
+- `og-image.png`: social preview image for the home page (lockup, headline, tagline, watermark)
+- `video-og-image.png`: social preview image for the video page
+- `packages/lib/brand/tikketMark.ts`: the mark outline used as a watermark by the dynamic social images in `packages/lib/OgImages.tsx` (booking pages, app pages and other public pages)
 - `emails/calendar-email-hero.png`: lockup and tagline on a light background for the team invite emails
 - `tikket/wordmark.svg`, `tikket/wordmark-white.svg`, `tikket/icon.svg`, `tikket/icon-white.svg`: lockup and mark used by the landing page
 - `apps/docs/public/cal-docs-logo*.svg`: lockup followed by "Docs"
