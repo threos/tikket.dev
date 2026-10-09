@@ -15,6 +15,17 @@ function getHostname(url?: string): string | null {
   }
 }
 
+// Hosting providers often redirect the apex domain to www (or the reverse), so both count as the website.
+function stripWww(hostname: string): string {
+  return hostname.startsWith("www.") ? hostname.slice(4) : hostname;
+}
+
+/** The website host in both its apex and www forms, for host-based redirects. */
+export function getWebsiteHostVariants(websiteOnlyHost: string): string[] {
+  const apex = stripWww(websiteOnlyHost);
+  return [apex, `www.${apex}`];
+}
+
 /**
  * The marketing host (e.g. tikket.dev) when it differs from the app host (e.g. app.tikket.dev).
  * Null when the landing page is off or both URLs share a host, so single-domain installs keep
@@ -24,7 +35,7 @@ export function getWebsiteOnlyHost({ enabled, websiteUrl, webAppUrl }: LandingCo
   if (!enabled) return null;
   const websiteHost = getHostname(websiteUrl);
   const webAppHost = getHostname(webAppUrl);
-  if (!websiteHost || websiteHost === webAppHost) return null;
+  if (!websiteHost || (webAppHost && stripWww(websiteHost) === stripWww(webAppHost))) return null;
   return websiteHost;
 }
 
@@ -38,5 +49,6 @@ export function resolveLandingMode(config: LandingConfig & { requestHost?: strin
   const websiteOnlyHost = getWebsiteOnlyHost(config);
   if (!websiteOnlyHost) return "app";
   const requestHostname = config.requestHost?.split(":")[0].toLowerCase();
-  return requestHostname === websiteOnlyHost ? "website" : "off";
+  if (!requestHostname) return "off";
+  return stripWww(requestHostname) === stripWww(websiteOnlyHost) ? "website" : "off";
 }

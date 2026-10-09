@@ -5,7 +5,7 @@ import { config as dotenvConfig } from "dotenv";
 import type { NextConfig } from "next";
 import type { RouteHas } from "next/dist/lib/load-custom-routes";
 import { withAxiom } from "next-axiom";
-import { getWebsiteOnlyHost } from "./modules/landing/lib/landingHost";
+import { getWebsiteHostVariants, getWebsiteOnlyHost } from "./modules/landing/lib/landingHost";
 import packageJson from "./package.json";
 import {
   nextJsOrgRewriteConfig,
@@ -514,14 +514,12 @@ const nextConfig = (phase: string): NextConfig => {
       // The marketing host only serves the landing page at `/`; every other page (booking links,
       // login, settings) moves to the app host. Paths with a dot are static assets the landing page needs.
       const websiteHostRedirects = websiteOnlyHost
-        ? [
-            {
-              source: "/:path((?!_next/|api/)[^.]+)",
-              has: [{ type: "host" as const, value: websiteOnlyHost }],
-              destination: `${process.env.NEXT_PUBLIC_WEBAPP_URL}/:path`,
-              permanent: false,
-            },
-          ]
+        ? getWebsiteHostVariants(websiteOnlyHost).map((host) => ({
+            source: "/:path((?!_next/|api/)[^.]+)",
+            has: [{ type: "host" as const, value: host }],
+            destination: `${process.env.NEXT_PUBLIC_WEBAPP_URL}/:path`,
+            permanent: false,
+          }))
         : [];
       const redirects = [
         ...websiteHostRedirects,
