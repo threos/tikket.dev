@@ -1,12 +1,10 @@
-# Spec-Driven Development Workflow
+# Spec-driven development workflow
 
-This workflow is **opt-in**. Use it when explicitly requested by saying "use spec-driven development" or "follow the spec workflow".
+This workflow is opt-in. To use it, say "use spec-driven development" or "follow the spec workflow". A spec is a set of design documents for one feature.
 
-## Design Documents
+## Design documents
 
-The `specs/` folder contains design documents for features in development.
-
-Each spec follows this structure:
+The `specs/` folder holds the design documents for features in development. Each spec has this structure:
 
 ```
 specs/{feature}/
@@ -19,42 +17,38 @@ specs/{feature}/
 └── docs/               # Documentation with screenshots
 ```
 
-**Workflow:**
+Workflow:
 
-1. Read the spec's `CLAUDE.md` for specific instructions
-2. Read `design.md` to understand what we're building
-3. Check `implementation.md` for current status
-4. Find the relevant code in the codebase
-5. Implement in small pieces, update `implementation.md` after each
+1. Read the `CLAUDE.md` of the spec. It holds the instructions for this feature.
+2. Read `design.md`. It describes what we build.
+3. Read `implementation.md` for the current status.
+4. Find the relevant code in the codebase.
+5. Implement the feature in small pieces. Update `implementation.md` after each piece.
 
----
+## When you implement a feature in spec mode
 
-## When Implementing Features (Spec Mode)
+1. Look for a design document in `specs/`. If one exists, follow it.
+2. If no spec exists, ask whether you must create one first.
+3. Find similar code in the codebase and follow its conventions.
+4. Update `implementation.md` after each piece. Mark what is done.
+5. Update `decisions.md` when you choose between approaches.
 
-1. **Check for design doc** in `specs/` — if it exists, follow it
-2. **If no spec exists** — ask if you should create one first
-3. **Look at existing patterns** — find similar code and follow conventions
-4. **Update implementation.md** — mark what's done after each piece
-5. **Update decisions.md** — when choosing between approaches
+## Create a new spec
 
----
-
-## Creating a New Spec
-
-When user asks to build a new feature:
+When the user asks for a new feature:
 
 1. Copy the template: `cp -r specs/_templates specs/{feature-name}`
-2. Explore the codebase to understand existing patterns
-3. Write `design.md` with technical spec
-4. Write `CLAUDE.md` with feature-specific instructions
-5. Initialize `implementation.md` with "not-started" status
-6. Ask user to review before implementing
+2. Explore the codebase to learn the existing patterns.
+3. Write the technical specification in `design.md`.
+4. Write the instructions for this feature in `CLAUDE.md`.
+5. Set the status in `implementation.md` to "not-started".
+6. Ask the user to review the spec before you implement it.
 
----
+## Update the spec files
 
-## Updating Spec Files
+### implementation.md
 
-### implementation.md — After completing each piece:
+Update this file after you complete each piece:
 
 ```markdown
 ## Status: in-progress
@@ -76,7 +70,9 @@ When user asks to build a new feature:
 - Next: Implement tRPC router
 ```
 
-### decisions.md — When choosing between approaches:
+### decisions.md
+
+Update this file when you choose between approaches:
 
 ```markdown
 ## ADR-001: Use Separate Table for Custom Locations
@@ -85,8 +81,8 @@ When user asks to build a new feature:
 Need to store user-defined locations.
 
 ### Options
-1. JSON field — simpler, but harder to query
-2. Separate table — more flexible, better indexing
+1. JSON field: simpler, but harder to query
+2. Separate table: more flexible, better indexing
 
 ### Decision
 Separate table for better querying.
@@ -96,10 +92,8 @@ Separate table for better querying.
 - Need new tRPC router
 ```
 
----
+## Rules for spec mode
 
-## Don't (When Using Spec-Driven Development)
-
-- Don't implement features without checking for a design doc first
-- Don't skip updating implementation.md after completing work
-- Don't make architectural decisions without recording them in decisions.md
+- Do not implement a feature before you look for a design document.
+- Do not skip the update of `implementation.md` after you complete work.
+- Do not make an architectural decision without a record in `decisions.md`.
