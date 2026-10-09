@@ -423,9 +423,17 @@ Contributions are welcome, from a typo fix to a new feature. Read the [Contribut
 
 Tikket is open source under the [MIT License](./LICENSE). Tikket is built on Cal.diy and Cal.com. Cal.diy and Cal are registered trademarks of Cal.com, Inc.
 
+## Thank you, Cal.com
+
+Tikket exists because the Cal.com team built Cal.com in the open for years and then released Cal.diy under the MIT license. The booking engine, the availability logic, the calendar and video integrations, the embeds and the API that Tikket runs on are their work, and the work of the hundreds of people who contributed to those projects.
+
+We did not write most of this code. We inherited it, and we are grateful for it. Tikket adds team scheduling back on top of that foundation and keeps the result open source, in the same spirit.
+
+If you need a hosted scheduling product with enterprise features, support and a company behind it, Cal.com is the original and the best place to start: [cal.com](https://cal.com).
+
 ## Acknowledgements
 
-Tikket is built on the foundation created by [Cal.com](https://cal.com), [Cal.diy](https://github.com/calcom/cal.diy) and the many contributors to those projects. Thanks also to:
+Tikket also depends on these projects:
 
 - [Vercel](https://vercel.com/)
 - [Next.js](https://nextjs.org/)
