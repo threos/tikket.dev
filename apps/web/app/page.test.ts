@@ -1,3 +1,4 @@
+import { headers } from "next/headers";
 import { isValidElement } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -82,6 +83,8 @@ describe("RootPage", () => {
 
   it("renders the landing page for logged-out visitors when enabled", async () => {
     vi.stubEnv("LANDING_PAGE_ENABLED", "true");
+    vi.stubEnv("NEXT_PUBLIC_WEBSITE_URL", "https://tikket.dev");
+    vi.stubEnv("NEXT_PUBLIC_WEBAPP_URL", "https://tikket.dev");
     mockGetServerSession.mockResolvedValue(null);
 
     const result = await RootPage();
@@ -89,5 +92,29 @@ describe("RootPage", () => {
     expect(isValidElement(result)).toBe(true);
     expect(mockRedirect).not.toHaveBeenCalled();
     expect(mockCheckOnboardingRedirect).not.toHaveBeenCalled();
+  });
+
+  describe("with the website on its own host", () => {
+    beforeEach(() => {
+      vi.stubEnv("LANDING_PAGE_ENABLED", "true");
+      vi.stubEnv("NEXT_PUBLIC_WEBSITE_URL", "https://tikket.dev");
+      vi.stubEnv("NEXT_PUBLIC_WEBAPP_URL", "https://app.tikket.dev");
+    });
+
+    it("always renders the landing page on the website host without a session lookup", async () => {
+      vi.mocked(headers).mockResolvedValueOnce(new Headers({ host: "tikket.dev" }));
+
+      const result = await RootPage();
+
+      expect(isValidElement(result)).toBe(true);
+      expect(mockGetServerSession).not.toHaveBeenCalled();
+    });
+
+    it("sends logged-out visitors on the app host to login", async () => {
+      vi.mocked(headers).mockResolvedValueOnce(new Headers({ host: "app.tikket.dev" }));
+      mockGetServerSession.mockResolvedValue(null);
+
+      await expect(RootPage()).rejects.toThrow("NEXT_REDIRECT:/auth/login");
+    });
   });
 });

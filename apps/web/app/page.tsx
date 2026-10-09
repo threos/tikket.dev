@@ -3,6 +3,7 @@ import { getServerSession } from "@calcom/features/auth/lib/getServerSession";
 import { checkOnboardingRedirect } from "@calcom/features/auth/lib/onboardingUtils";
 import PageWrapper from "@calcom/web/components/PageWrapperAppDir";
 import LandingView from "@calcom/web/modules/landing/landing-view";
+import { resolveLandingMode } from "@calcom/web/modules/landing/lib/landingHost";
 import { buildLegacyRequest } from "@lib/buildLegacyCtx";
 import { _generateMetadata } from "app/_utils";
 import { cookies, headers } from "next/headers";
@@ -10,7 +11,13 @@ import { redirect } from "next/navigation";
 
 // Hosted deployments opt in to the public landing page; self-hosted installs keep sending
 // logged-out visitors straight to the login screen.
-const isLandingPageEnabled = () => process.env.LANDING_PAGE_ENABLED === "true";
+const getLandingMode = (requestHost: string | null) =>
+  resolveLandingMode({
+    enabled: process.env.LANDING_PAGE_ENABLED === "true",
+    websiteUrl: process.env.NEXT_PUBLIC_WEBSITE_URL,
+    webAppUrl: process.env.NEXT_PUBLIC_WEBAPP_URL,
+    requestHost,
+  });
 
 export const generateMetadata = async () => {
   return await _generateMetadata(
@@ -24,18 +31,24 @@ export const generateMetadata = async () => {
 
 const RootPage = async () => {
   const headersList = await headers();
+  const landingMode = getLandingMode(headersList.get("x-forwarded-host") ?? headersList.get("host"));
+  const landing = (
+    <PageWrapper requiresLicense={false} nonce={headersList.get("x-csp-nonce") ?? undefined}>
+      <LandingView />
+    </PageWrapper>
+  );
+
+  // Session cookies live on the app host, so the separate website host always shows the landing page.
+  if (landingMode === "website") return landing;
+
   const session = await getServerSession({ req: buildLegacyRequest(headersList, await cookies()) });
 
   if (!session?.user?.id) {
-    if (!isLandingPageEnabled()) {
+    if (landingMode === "off") {
       redirect("/auth/login");
     }
 
-    return (
-      <PageWrapper requiresLicense={false} nonce={headersList.get("x-csp-nonce") ?? undefined}>
-        <LandingView />
-      </PageWrapper>
-    );
+    return landing;
   }
 
   // Check if user needs onboarding and redirect before going to event-types
