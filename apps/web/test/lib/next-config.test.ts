@@ -1,5 +1,5 @@
-import { it, expect, describe, beforeAll } from "vitest";
-
+import process from "node:process";
+import { beforeAll, describe, expect, it } from "vitest";
 import { getRegExpThatMatchesAllOrgDomains } from "../../getNextjsOrgRewriteConfig";
 
 /* eslint-disable @typescript-eslint/no-require-imports */
@@ -10,7 +10,7 @@ let orgUserRouteMatch: MatcherRes;
 
 beforeAll(async () => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //@ts-ignore
+  //@ts-expect-error
   process.env.NEXT_PUBLIC_WEBAPP_URL = "http://example.com";
   const { orgUserRoutePath, orgUserTypeRoutePath } = await import("../../pagesAndRewritePaths");
 
@@ -100,11 +100,8 @@ describe("next.config.js - Org Rewrite", () => {
         type: "def",
       });
 
-      // With teams removed, /team/abc is treated as a normal /:user/:type booking page
-      expect(orgUserTypeRouteMatch("/team/abc")?.params).toEqual({
-        user: "team",
-        type: "abc",
-      });
+      // /team/* is a real route again (public team pages), so it must not be rewritten as /:user/:type
+      expect(orgUserTypeRouteMatch("/team/abc")).toEqual(false);
 
       expect(orgUserTypeRouteMatch("/abc")).toEqual(false);
 

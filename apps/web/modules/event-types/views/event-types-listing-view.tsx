@@ -46,6 +46,7 @@ import {
   type ProfileOption,
 } from "@calcom/web/modules/event-types/components/CreateEventTypeDialog";
 import { DuplicateDialog } from "@calcom/web/modules/event-types/components/DuplicateDialog";
+import { NewEventTypeButton } from "@calcom/web/modules/event-types/components/NewEventTypeButton";
 import { InfiniteSkeletonLoader } from "@calcom/web/modules/event-types/components/SkeletonLoader";
 import { SearchIcon } from "@coss/ui/icons";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
@@ -930,11 +931,7 @@ const CTA = ({ profileOptions }: { profileOptions: ProfileOption[] }) => {
         }}
         placeholder={t("search")}
       />
-      <Button
-        data-testid="new-event-type"
-        href={`?dialog=new&eventPage=${profileOptions[0]?.slug ?? ""}`}>
-        {t("new")}
-      </Button>
+      <NewEventTypeButton profileOptions={profileOptions} />
       <CreateEventTypeDialog profileOptions={profileOptions} />
     </div>
   );

@@ -24,6 +24,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import type { ComponentProps } from "react";
 import React, { useEffect, useMemo, useState } from "react";
+import { TeamsSettingsSidebarSection } from "~/settings/teams/components/TeamsSettingsSidebarSection";
 import Shell from "~/shell/Shell";
 
 const getTabs = (
@@ -368,7 +369,6 @@ const useTabs = ({
     // check if name is in adminRequiredKeys
     return processedTabs.filter((tab) => {
       if (organizationRequiredKeys.includes(tab.name)) return !!orgBranding;
-      if (tab.name === "other_teams" && !permissions?.canUpdateOrganization) return false;
 
       if (isAdmin) return true;
       return !adminRequiredKeys.includes(tab.name);
@@ -479,6 +479,7 @@ const SettingsSidebarContainer = ({
                 </div>
               ))}
             </div>
+            {tab.name === "developer" && <TeamsSettingsSidebarSection />}
           </React.Fragment>
         );
       })}
