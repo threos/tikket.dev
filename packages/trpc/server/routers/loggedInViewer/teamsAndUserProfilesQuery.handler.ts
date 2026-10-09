@@ -1,3 +1,4 @@
+import { getTeamPermissionService } from "@calcom/features/teams/di/TeamPermissionService.container";
 import { getPlaceholderAvatar } from "@calcom/lib/defaultAvatarImage";
 import { getUserAvatarUrl } from "@calcom/lib/getAvatarUrl";
 import type { PrismaClient } from "@calcom/prisma";
@@ -8,13 +9,6 @@ import { TRPCError } from "@trpc/server";
 import type { TTeamsAndUserProfilesQueryInputSchema } from "./teamsAndUserProfilesQuery.schema";
 
 type PermissionString = string;
-class PermissionCheckService {
-  constructor(_prisma?: unknown) {}
-  async checkPermission(..._args: unknown[]) { return true; }
-  async hasPermission(..._args: unknown[]) { return true; }
-  async getTeamIdsWithPermission(..._args: unknown[]): Promise<number[]> { return []; }
-}
-
 type TeamsAndUserProfileOptions = {
   ctx: {
     user: NonNullable<TrpcSessionUser>;
@@ -104,8 +98,13 @@ export const teamsAndUserProfilesQuery = async ({ ctx, input }: TeamsAndUserProf
   // Filter teams based on permission if provided
   let hasPermissionForFiltered: boolean[] = [];
   if (input?.withPermission) {
-    const permissionService = new PermissionCheckService();
+    const permissionService = getTeamPermissionService();
     const { permission, fallbackRoles } = input.withPermission;
+    // The permission service fails closed on an empty role list; a client that names no roles is
+    // asking for read-style access, which every accepted member has.
+    const allowedRoles = fallbackRoles?.length
+      ? (fallbackRoles as MembershipRole[])
+      : [MembershipRole.MEMBER, MembershipRole.ADMIN, MembershipRole.OWNER];
 
     const permissionChecks = await Promise.all(
       teamsData.map((membership) =>
@@ -113,7 +112,7 @@ export const teamsAndUserProfilesQuery = async ({ ctx, input }: TeamsAndUserProf
           userId: ctx.user.id,
           teamId: membership.team.id,
           permission: permission as PermissionString,
-          fallbackRoles: fallbackRoles ? (fallbackRoles as MembershipRole[]) : [],
+          fallbackRoles: allowedRoles,
         })
       )
     );

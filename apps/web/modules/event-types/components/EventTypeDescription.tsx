@@ -1,17 +1,20 @@
-import { useMemo } from "react";
-
 import { getPaymentAppData } from "@calcom/app-store/_utils/payments/getPaymentAppData";
 import { eventTypeMetaDataSchemaWithTypedApps } from "@calcom/app-store/zod-utils";
 import { Price } from "@calcom/features/bookings/components/event-meta/Price";
-import { PriceIcon } from "@calcom/web/modules/bookings/components/event-meta/PriceIcon";
+import {
+  getAssignmentStrategy,
+  resolveAssignmentStrategyId,
+} from "@calcom/features/teams/lib/assignmentStrategies";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { parseRecurringEvent } from "@calcom/lib/isRecurringEvent";
 import { markdownToSafeHTML } from "@calcom/lib/markdownToSafeHTML";
 import type { baseEventTypeSelect } from "@calcom/prisma";
-import type { Prisma, EventType } from "@calcom/prisma/client";
+import type { EventType, Prisma } from "@calcom/prisma/client";
 import { SchedulingType } from "@calcom/prisma/enums";
 import classNames from "@calcom/ui/classNames";
 import { Badge } from "@calcom/ui/components/badge";
+import { PriceIcon } from "@calcom/web/modules/bookings/components/event-meta/PriceIcon";
+import { useMemo } from "react";
 
 export type EventTypeDescriptionProps = {
   eventType: Pick<
@@ -22,6 +25,7 @@ export type EventTypeDescriptionProps = {
   > & {
     descriptionAsSafeHTML?: string | null;
     recurringEvent: Prisma.JsonValue;
+    isRRWeightsEnabled?: boolean | null;
   };
   className?: string;
   shortenDescription?: boolean;
@@ -82,10 +86,10 @@ export const EventTypeDescription = ({
           )}
           {eventType.schedulingType && eventType.schedulingType !== SchedulingType.MANAGED && (
             <li>
-              <Badge variant="gray" startIcon="users">
-                {eventType.schedulingType === SchedulingType.ROUND_ROBIN && t("round_robin")}
-                {eventType.schedulingType === SchedulingType.COLLECTIVE && t("collective")}
-              </Badge>
+              <AssignmentStrategyBadge
+                schedulingType={eventType.schedulingType}
+                isRRWeightsEnabled={eventType.isRRWeightsEnabled}
+              />
             </li>
           )}
           {recurringEvent?.count && recurringEvent.count > 0 && (
@@ -122,7 +126,7 @@ export const EventTypeDescription = ({
             </li>
           )}
           {/* TODO: Maybe add a tool tip to this? */}
-          {eventType.requiresConfirmation || (recurringEvent?.count) ? (
+          {eventType.requiresConfirmation || recurringEvent?.count ? (
             <li className="block xl:hidden">
               <Badge variant="gray" startIcon="plus">
                 <p>{[eventType.requiresConfirmation, recurringEvent?.count].filter(Boolean).length}</p>
@@ -145,3 +149,13 @@ export const EventTypeDescription = ({
 };
 
 export default EventTypeDescription;
+
+function AssignmentStrategyBadge(props: { schedulingType: string; isRRWeightsEnabled?: boolean | null }) {
+  const { t } = useLocale();
+  const strategy = getAssignmentStrategy(resolveAssignmentStrategyId(props));
+  return (
+    <Badge variant="gray" startIcon={strategy.icon}>
+      {t(strategy.labelKey)}
+    </Badge>
+  );
+}

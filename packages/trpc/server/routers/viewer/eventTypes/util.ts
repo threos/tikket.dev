@@ -1,4 +1,5 @@
 import type { EventTypeRepository } from "@calcom/features/eventtypes/repositories/eventTypeRepository";
+import { getTeamPermissionService } from "@calcom/features/teams/di/TeamPermissionService.container";
 import { UserRepository } from "@calcom/features/users/repositories/UserRepository";
 import { markdownToSafeHTML } from "@calcom/lib/markdownToSafeHTML";
 import prisma from "@calcom/prisma";
@@ -12,13 +13,6 @@ import authedProcedure from "../../../procedures/authedProcedure";
 import type { TUpdateInputSchema } from "./types";
 
 type PermissionString = string;
-class PermissionCheckService {
-  constructor(_prisma?: unknown) {}
-  async checkPermission(..._args: unknown[]) { return true; }
-  async hasPermission(..._args: unknown[]) { return true; }
-  async getTeamIdsWithPermission(..._args: unknown[]): Promise<number[]> { return []; }
-}
-
 type EventType = Awaited<ReturnType<EventTypeRepository["findAllByUpId"]>>[number];
 
 export const eventOwnerProcedure = authedProcedure
@@ -51,6 +45,7 @@ export const eventOwnerProcedure = authedProcedure
               select: {
                 userId: true,
                 role: true,
+                accepted: true,
               },
             },
           },
@@ -65,7 +60,8 @@ export const eventOwnerProcedure = authedProcedure
     const isAuthorized = (() => {
       if (event.team) {
         const teamMember = event.team.members.find((member) => member.userId === ctx.user.id);
-        const isOwnerOrAdmin = teamMember?.role === "ADMIN" || teamMember?.role === "OWNER";
+        const isOwnerOrAdmin =
+          !!teamMember?.accepted && (teamMember.role === "ADMIN" || teamMember.role === "OWNER");
 
         return isOwnerOrAdmin;
       }
@@ -158,7 +154,7 @@ export const createEventPbacProcedure = (
         }
       } else {
         // Team event - check PBAC/fallback permissions
-        const permissionCheckService = new PermissionCheckService();
+        const permissionCheckService = getTeamPermissionService();
         const hasPermission = await permissionCheckService.checkPermission({
           userId: ctx.user.id,
           teamId: event.teamId,

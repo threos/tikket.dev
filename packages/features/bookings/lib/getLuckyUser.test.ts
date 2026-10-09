@@ -1,14 +1,11 @@
 import CalendarManagerMock from "@calcom/features/calendars/lib/__mocks__/CalendarManager";
 import prismaMock from "@calcom/testing/lib/__mocks__/prismaMock";
-
-import { expect, it, describe, vi, beforeAll } from "vitest";
-
 import dayjs from "@calcom/dayjs";
 import { getLuckyUserService } from "@calcom/features/di/containers/LuckyUser";
-import { buildUser, buildBooking } from "@calcom/lib/test/builder";
+import { buildBooking, buildUser } from "@calcom/lib/test/builder";
 import { RRResetInterval, RRTimestampBasis } from "@calcom/prisma/enums";
-
-import { getIntervalStartDate, getIntervalEndDate } from "./getLuckyUser";
+import { beforeAll, describe, expect, it, vi } from "vitest";
+import { getIntervalEndDate, getIntervalStartDate } from "./getLuckyUser";
 
 const luckyUserService = getLuckyUserService();
 
@@ -65,7 +62,7 @@ it("can find lucky user with maximize availability", async () => {
         includeNoShowInRRCalculation: false,
       },
       allRRHosts: [],
-          })
+    })
   ).resolves.toStrictEqual(users[1]);
 });
 
@@ -120,7 +117,7 @@ it("can find lucky user with maximize availability and priority ranking", async 
         includeNoShowInRRCalculation: false,
       },
       allRRHosts: [],
-          })
+    })
   ).resolves.toStrictEqual(users[1]);
 
   const userLowest = buildUser({
@@ -176,7 +173,7 @@ it("can find lucky user with maximize availability and priority ranking", async 
         includeNoShowInRRCalculation: false,
       },
       allRRHosts: [],
-          })
+    })
   ).resolves.toStrictEqual(usersWithPriorities[2]);
 
   const userLow = buildUser({
@@ -237,7 +234,7 @@ it("can find lucky user with maximize availability and priority ranking", async 
         includeNoShowInRRCalculation: false,
       },
       allRRHosts: [],
-          })
+    })
   ).resolves.toStrictEqual(usersWithSamePriorities[1]);
 });
 
@@ -338,7 +335,7 @@ describe("maximize availability and weights", () => {
           includeNoShowInRRCalculation: false,
         },
         allRRHosts,
-              })
+      })
     ).resolves.toStrictEqual(users[1]);
 
     const queryArgs = prismaMock.booking.findMany.mock.calls[0][0];
@@ -350,6 +347,40 @@ describe("maximize availability and weights", () => {
         lte: new Date("2021-06-20T11:59:59.000Z"),
       })
     );
+  });
+
+  it("does not crash when every rotating host has weight 0 and picks the host with fewer bookings", async () => {
+    const users: GetLuckyUserAvailableUsersType = [
+      buildUser({ id: 1, username: "test1", name: "Test User 1", email: "test1@example.com", weight: 0 }),
+      buildUser({ id: 2, username: "test2", name: "Test User 2", email: "test2@example.com", weight: 0 }),
+    ];
+
+    CalendarManagerMock.getBusyCalendarTimes.mockResolvedValue({ success: true, data: [] });
+    prismaMock.outOfOfficeEntry.findMany.mockResolvedValue([]);
+    prismaMock.user.findMany.mockResolvedValue(users);
+    prismaMock.host.findMany.mockResolvedValue([]);
+    prismaMock.booking.findMany.mockResolvedValue([
+      buildBooking({ id: 1, userId: 1, createdAt: new Date("2021-06-10T06:30:00.000Z") }),
+    ]);
+
+    const allRRHosts = users.map((user) => ({
+      user: { id: user.id, email: user.email, credentials: [], userLevelSelectedCalendars: [] },
+      weight: 0,
+      createdAt: new Date(0),
+    }));
+
+    await expect(
+      luckyUserService.getLuckyUser({
+        availableUsers: users,
+        eventType: {
+          id: 1,
+          isRRWeightsEnabled: true,
+          team: { rrResetInterval: RRResetInterval.MONTH, rrTimestampBasis: RRTimestampBasis.CREATED_AT },
+          includeNoShowInRRCalculation: false,
+        },
+        allRRHosts,
+      })
+    ).resolves.toStrictEqual(users[1]);
   });
 
   it("can find lucky user if hosts have different weights", async () => {
@@ -456,7 +487,7 @@ describe("maximize availability and weights", () => {
           includeNoShowInRRCalculation: false,
         },
         allRRHosts,
-              })
+      })
     ).resolves.toStrictEqual(users[0]);
 
     const queryArgs = prismaMock.booking.findMany.mock.calls[0][0];
@@ -574,7 +605,7 @@ describe("maximize availability and weights", () => {
           includeNoShowInRRCalculation: false,
         },
         allRRHosts,
-              })
+      })
     ).resolves.toStrictEqual(users[0]);
 
     const queryArgs = prismaMock.booking.findMany.mock.calls[0][0];
@@ -679,7 +710,7 @@ describe("maximize availability and weights", () => {
           includeNoShowInRRCalculation: false,
         },
         allRRHosts,
-              })
+      })
     ).resolves.toStrictEqual(users[1]);
 
     const queryArgs = prismaMock.booking.findMany.mock.calls[0][0];
@@ -799,7 +830,7 @@ describe("maximize availability and weights", () => {
           includeNoShowInRRCalculation: false,
         },
         allRRHosts,
-              })
+      })
     ).resolves.toStrictEqual(users[1]);
 
     const queryArgs = prismaMock.booking.findMany.mock.calls[0][0];
@@ -877,7 +908,7 @@ describe("maximize availability and weights", () => {
           includeNoShowInRRCalculation: false,
         },
         allRRHosts,
-              })
+      })
     ).resolves.toStrictEqual(users[0]);
   });
 
@@ -973,7 +1004,7 @@ describe("maximize availability and weights", () => {
           includeNoShowInRRCalculation: false,
         },
         allRRHosts,
-              })
+      })
     ).resolves.toStrictEqual(users[1]);
 
     prismaMock.booking.findMany.mockResolvedValueOnce([]);
@@ -1002,7 +1033,7 @@ describe("maximize availability and weights", () => {
           includeNoShowInRRCalculation: false,
         },
         allRRHosts,
-              })
+      })
     ).resolves.toStrictEqual(users[0]);
 
     const queryArgs = prismaMock.booking.findMany.mock.calls[0][0];
@@ -1257,7 +1288,7 @@ it("returns the single user correctly without fetching data when only one user a
         includeNoShowInRRCalculation: false,
       },
       allRRHosts: [],
-          })
+    })
   ).resolves.toStrictEqual(singleUser);
 
   // Verify no expensive operations were called

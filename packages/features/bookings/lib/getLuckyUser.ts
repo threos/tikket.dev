@@ -379,7 +379,9 @@ export class LuckyUserService implements ILuckyUserService {
       if (attributeWeights) {
         userWeight = attributeWeights.find((userWeight) => userWeight.userId === user.id)?.weight ?? 100;
       }
-      const targetPercentage = userWeight / totalWeight;
+      // All-zero weights would divide by zero (NaN shortfalls match nothing), so treat everyone's target
+      // share as equal-zero and let the fewest-bookings host win.
+      const targetPercentage = totalWeight > 0 ? userWeight / totalWeight : 0;
       const userBookings = bookingsOfAvailableUsersOfInterval.filter(
         (booking) =>
           booking.userId === user.id || booking.attendees.some((attendee) => attendee.email === user.email)

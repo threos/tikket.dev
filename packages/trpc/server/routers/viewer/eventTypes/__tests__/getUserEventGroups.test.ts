@@ -33,6 +33,12 @@ vi.mock("@calcom/features/profile/repositories/ProfileRepository", () => ({
 
 const mockFilterTeamsByEventTypeReadPermission = vi.fn();
 
+const { mockCheckPermission } = vi.hoisted(() => ({ mockCheckPermission: vi.fn() }));
+
+vi.mock("@calcom/features/teams/di/TeamPermissionService.container", () => ({
+  getTeamPermissionService: () => ({ checkPermission: mockCheckPermission }),
+}));
+
 vi.mock("../teamAccessUseCase", () => ({
   TeamAccessUseCase: vi.fn().mockImplementation(function () {
     return {
@@ -79,6 +85,7 @@ describe("getUserEventGroups", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockCheckPermission.mockResolvedValue(true);
   });
 
   describe("Basic functionality", () => {
@@ -171,7 +178,7 @@ describe("getUserEventGroups", () => {
   });
 
   describe("Permissions", () => {
-    it("should grant permissions for team members (stub always returns true)", async () => {
+    it("should grant create permissions when the team role allows it", async () => {
       const { ProfileRepository } = await import("@calcom/features/profile/repositories/ProfileRepository");
 
       const mockTeamMembership = {
@@ -211,6 +218,12 @@ describe("getUserEventGroups", () => {
 
       expect(result.teamPermissions[100]).toMatchObject({
         canCreateEventType: true,
+      });
+      expect(mockCheckPermission).toHaveBeenCalledWith({
+        userId: mockCtx.user.id,
+        teamId: 100,
+        permission: "eventType.create",
+        fallbackRoles: [MembershipRole.OWNER, MembershipRole.ADMIN],
       });
     });
   });

@@ -1,11 +1,13 @@
 import { getOrgUsernameFromEmail } from "@calcom/features/auth/signup/utils/getOrgUsernameFromEmail";
 import { ProfileRepository } from "@calcom/features/profile/repositories/ProfileRepository";
+import { getTeamRepository } from "@calcom/features/teams/di/TeamRepository.container";
 import { UserRepository } from "@calcom/features/users/repositories/UserRepository";
 import { WEBAPP_URL } from "@calcom/lib/constants";
 import logger from "@calcom/lib/logger";
 import { safeStringify } from "@calcom/lib/safeStringify";
 import prisma from "@calcom/prisma";
 import { RedirectType } from "@calcom/prisma/enums";
+import { teamMetadataSchema } from "@calcom/prisma/zod-utils";
 
 const log = logger.getSubLogger({ prefix: ["lib", "createAProfileForAnExistingUser"] });
 export const createAProfileForAnExistingUser = async ({
@@ -19,8 +21,8 @@ export const createAProfileForAnExistingUser = async ({
   };
   organizationId: number;
 }) => {
-  const teamRepo = new TeamRepository(prisma);
-  const org = await teamRepo.findById({ id: organizationId });
+  const teamRepo = getTeamRepository();
+  const org = await teamRepo.findByIdIncludeOrganizationSettings({ id: organizationId });
   if (!org) {
     throw new Error(`Organization with id ${organizationId} not found`);
   }
@@ -59,7 +61,7 @@ export const createAProfileForAnExistingUser = async ({
     safeStringify({ userId: user.id, profileId: profile.id, usernameInOrg, username: user.currentUsername })
   );
 
-  const orgSlug = org.slug || org.requestedSlug;
+  const orgSlug = org.slug || teamMetadataSchema.parse(org.metadata)?.requestedSlug;
 
   if (!orgSlug) {
     throw new Error(`Organization with id ${organizationId} doesn't have a slug`);

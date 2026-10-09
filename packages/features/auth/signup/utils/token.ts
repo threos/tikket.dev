@@ -12,6 +12,7 @@ export async function findTokenByToken({ token }: { token: string }) {
       id: true,
       expires: true,
       teamId: true,
+      identifier: true,
     },
   });
 
@@ -23,6 +24,38 @@ export async function findTokenByToken({ token }: { token: string }) {
   }
 
   return foundToken;
+}
+
+/**
+ * Only a token that still points at a team counts as a team invite. VerificationToken.team is
+ * ON DELETE SET NULL, and other flows (e.g. email verification) also store tokens here, so a token
+ * with teamId = null must not unlock invite-only behaviour such as signing up while signup is disabled.
+ */
+export async function isTeamInviteToken({ token }: { token: string }): Promise<boolean> {
+  try {
+    const { teamId } = await findTokenByToken({ token });
+    return teamId !== null;
+  } catch (error) {
+    if (error instanceof HttpError) return false;
+    throw error;
+  }
+}
+
+// Tokens are issued for one email address; without this check anyone holding the link could sign up
+// under any email. It applies to tokens whose team was deleted too, since those are still consumed.
+export function throwIfTokenEmailMismatch({
+  tokenIdentifier,
+  email,
+}: {
+  tokenIdentifier: string;
+  email: string;
+}) {
+  if (!tokenIdentifier.includes("@")) return;
+  if (tokenIdentifier.trim().toLowerCase() === email.trim().toLowerCase()) return;
+  throw new HttpError({
+    statusCode: 403,
+    message: "This invitation was sent to a different email address",
+  });
 }
 
 export function throwIfTokenExpired(expires?: Date) {

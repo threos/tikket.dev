@@ -1,26 +1,22 @@
-import type { Dispatch, SetStateAction } from "react";
-import { useState } from "react";
-import { useFormContext } from "react-hook-form";
-import type { Options } from "react-select";
-
 import { Dialog } from "@calcom/features/components/controlled-dialog";
+import type { CheckedSelectOption } from "@calcom/features/eventtypes/components/CheckedTeamSelect";
 import type {
   FormValues,
   Host,
   InputClassNames,
   SelectClassNames,
 } from "@calcom/features/eventtypes/lib/types";
-import { groupHostsByGroupId, getHostsFromOtherGroups, sortHosts } from "@calcom/lib/bookings/hostGroupUtils";
+import { getHostsFromOtherGroups, groupHostsByGroupId, sortHosts } from "@calcom/lib/bookings/hostGroupUtils";
 import { DEFAULT_GROUP_ID } from "@calcom/lib/constants";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import classNames from "@calcom/ui/classNames";
 import { Button } from "@calcom/ui/components/button";
-import { DialogContent, DialogFooter, DialogClose } from "@calcom/ui/components/dialog";
-import { Label } from "@calcom/ui/components/form";
-import { Select } from "@calcom/ui/components/form";
-import { TextField } from "@calcom/ui/components/form";
-
-import type { CheckedSelectOption } from "@calcom/features/eventtypes/components/CheckedTeamSelect";
+import { DialogClose, DialogContent, DialogFooter } from "@calcom/ui/components/dialog";
+import { Label, Select, TextField } from "@calcom/ui/components/form";
+import type { Dispatch, SetStateAction } from "react";
+import { useState } from "react";
+import { useFormContext } from "react-hook-form";
+import type { Options } from "react-select";
 
 interface IDialog {
   isOpenDialog: boolean;
@@ -53,7 +49,7 @@ export const PriorityDialog = (
 
   const [newPriority, setNewPriority] = useState<{ label: string; value: number }>();
   const setPriority = () => {
-    if (!!newPriority) {
+    if (newPriority) {
       const hosts: Host[] = getValues("hosts");
       const isRRWeightsEnabled = getValues("isRRWeightsEnabled");
       const hostGroups = getValues("hostGroups");
@@ -140,7 +136,9 @@ export const WeightDialog = (props: IDialog & { customClassNames?: WeightDialogC
   const [newWeight, setNewWeight] = useState<number | undefined>();
 
   const setWeight = () => {
-    if (!!newWeight) {
+    // 0 is a valid weight (host stays in the pool but receives no new bookings), so check for NaN instead.
+    if (newWeight !== undefined && !Number.isNaN(newWeight) && newWeight >= 0) {
+      const optionsByValue = new Map(options.map((opt) => [opt.value, opt]));
       const hosts: Host[] = getValues("hosts");
       const isRRWeightsEnabled = getValues("isRRWeightsEnabled");
       const hostGroups = getValues("hostGroups");
@@ -166,7 +164,7 @@ export const WeightDialog = (props: IDialog & { customClassNames?: WeightDialogC
       if (hostGroupToSort) {
         sortedHostGroup = hostGroupToSort
           .map((host) => {
-            const userOption = options.find((opt) => opt.value === host.userId.toString());
+            const userOption = optionsByValue.get(host.userId.toString());
             const updatedHost = updateHostWeight(host);
             return {
               ...updatedHost,
@@ -191,7 +189,7 @@ export const WeightDialog = (props: IDialog & { customClassNames?: WeightDialogC
       const otherGroupsHosts = getHostsFromOtherGroups(rrHosts, option.groupId);
 
       const otherGroupsOptions = otherGroupsHosts.map((host) => {
-        const userOption = options.find((opt) => opt.value === host.userId.toString());
+        const userOption = optionsByValue.get(host.userId.toString());
         return {
           avatar: userOption?.avatar ?? "",
           label: userOption?.label ?? host.userId.toString(),
@@ -210,7 +208,7 @@ export const WeightDialog = (props: IDialog & { customClassNames?: WeightDialogC
 
   return (
     <Dialog open={isOpenDialog} onOpenChange={setIsOpenDialog}>
-      <DialogContent title={t("set_weight")} description={t("weights_description")}>
+      <DialogContent title={t("set_weight")} description={t("weight_dialog_description")}>
         <div className={classNames("mb-4 mt-2", customClassNames?.container)}>
           <Label className={customClassNames?.label}>
             {t("weight_for_user", { userName: option.label })}
@@ -227,7 +225,6 @@ export const WeightDialog = (props: IDialog & { customClassNames?: WeightDialogC
               defaultValue={option.weight ?? 100}
               type="number"
               onChange={(e) => setNewWeight(parseInt(e.target.value))}
-              addOnSuffix={<>%</>}
             />
           </div>
         </div>

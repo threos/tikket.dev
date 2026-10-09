@@ -8,12 +8,14 @@ import { joinAnyChildTeamOnOrgInvite } from "@calcom/features/auth/signup/utils/
 import { prefillAvatar } from "@calcom/features/auth/signup/utils/prefillAvatar";
 import {
   findTokenByToken,
+  throwIfTokenEmailMismatch,
   throwIfTokenExpired,
   validateAndGetCorrectedUsernameForTeam,
 } from "@calcom/features/auth/signup/utils/token";
 import { validateAndGetCorrectedUsernameAndEmail } from "@calcom/features/auth/signup/utils/validateUsername";
 import { getFeatureRepository } from "@calcom/features/di/containers/FeatureRepository";
 import { getUserRepository } from "@calcom/features/di/containers/UserRepository";
+import { getTeamMembershipService } from "@calcom/features/teams/di/TeamMembershipService.container";
 import { GlobalWatchlistRepository } from "@calcom/features/watchlist/lib/repository/GlobalWatchlistRepository";
 import { sentrySpan } from "@calcom/features/watchlist/lib/telemetry";
 import { normalizeEmail } from "@calcom/features/watchlist/lib/utils/normalization";
@@ -45,9 +47,7 @@ const billingService = {
   async createCustomer(_args: Record<string, unknown>): Promise<{ stripeCustomerId: string }> {
     return { stripeCustomerId: "" };
   },
-  async createSubscriptionCheckout(
-    _args: Record<string, unknown>
-  ): Promise<{ sessionId: string }> {
+  async createSubscriptionCheckout(_args: Record<string, unknown>): Promise<{ sessionId: string }> {
     return { sessionId: "" };
   },
 };
@@ -95,8 +95,13 @@ const handler: CustomNextApiHandler = async (body, usernameStatus, query) => {
 
   let foundToken: { id: number; teamId: number | null; expires: Date } | null = null;
   if (token) {
-    foundToken = await findTokenByToken({ token });
-    throwIfTokenExpired(foundToken?.expires);
+    const tokenRecord = await findTokenByToken({ token });
+    throwIfTokenExpired(tokenRecord.expires);
+    throwIfTokenEmailMismatch({
+      tokenIdentifier: tokenRecord.identifier,
+      email: email,
+    });
+    foundToken = tokenRecord;
     username = await validateAndGetCorrectedUsernameForTeam({
       username,
       email,
@@ -105,7 +110,7 @@ const handler: CustomNextApiHandler = async (body, usernameStatus, query) => {
     });
 
     if (foundToken?.teamId) {
-      const existingUser = await userRepository.findByEmailWithInvitedTo({email})
+      const existingUser = await userRepository.findByEmailWithInvitedTo({ email });
 
       if (existingUser && existingUser.invitedTo !== foundToken.teamId) {
         return NextResponse.json({ message: SIGNUP_ERROR_CODES.USER_ALREADY_EXISTS }, { status: 409 });
@@ -200,8 +205,8 @@ const handler: CustomNextApiHandler = async (body, usernameStatus, query) => {
         const existingUserByUsername = await userRepository.findByUsernameAndOrganizationId({
           username,
           organizationId,
-          excludeEmail: email
-        })
+          excludeEmail: email,
+        });
         if (existingUserByUsername) {
           return NextResponse.json({ message: SIGNUP_ERROR_CODES.USER_ALREADY_EXISTS }, { status: 409 });
         }
@@ -215,8 +220,8 @@ const handler: CustomNextApiHandler = async (body, usernameStatus, query) => {
           hashedPassword,
           organizationId,
           emailVerified: new Date(),
-          identityProvider: IdentityProvider.CAL
-        })
+          identityProvider: IdentityProvider.CAL,
+        });
       } catch (error) {
         if (isPrismaError(error) && error.code === "P2002") {
           const target = String(error.meta?.target ?? "");
@@ -232,6 +237,13 @@ const handler: CustomNextApiHandler = async (body, usernameStatus, query) => {
         team,
       });
 
+      try {
+        await getTeamMembershipService().addToAssignAllTeamMembersEventTypes(team.id, user.id);
+      } catch (error) {
+        // Host assignment is recoverable from the event type's Assignment tab, so it must not fail signup.
+        log.error("Failed to add new member to assign-all-members event types", { teamId: team.id, error });
+      }
+
       // Accept any child team invites for orgs.
       if (team.parent) {
         await joinAnyChildTeamOnOrgInvite({
@@ -240,13 +252,6 @@ const handler: CustomNextApiHandler = async (body, usernameStatus, query) => {
         });
       }
     }
-
-    // Cleanup token after use
-    await prisma.verificationToken.delete({
-      where: {
-        id: foundToken.id,
-      },
-    });
   } else {
     // Create the user
     try {
@@ -261,8 +266,8 @@ const handler: CustomNextApiHandler = async (body, usernameStatus, query) => {
         metadata: {
           stripeCustomerId: customer.stripeCustomerId,
           checkoutSessionId,
-        }
-      })
+        },
+      });
     } catch (error) {
       // Fallback for race conditions where user was created between our check and create
       if (isPrismaError(error) && error.code === "P2002") {
@@ -276,6 +281,15 @@ const handler: CustomNextApiHandler = async (body, usernameStatus, query) => {
     if (process.env.AVATARAPI_USERNAME && process.env.AVATARAPI_PASSWORD) {
       await prefillAvatar({ email });
     }
+  }
+
+  // Delete every used token, including one whose team was deleted (teamId = null), so it can't be replayed.
+  if (foundToken) {
+    await prisma.verificationToken.delete({
+      where: {
+        id: foundToken.id,
+      },
+    });
   }
 
   const featureRepository = getFeatureRepository();

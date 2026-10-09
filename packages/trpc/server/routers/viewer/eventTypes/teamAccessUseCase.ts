@@ -1,11 +1,6 @@
+import { getTeamPermissionService } from "@calcom/features/teams/di/TeamPermissionService.container";
+import type { TeamPermissionService } from "@calcom/features/teams/services/TeamPermissionService";
 import type { Membership, Team } from "@calcom/prisma/client";
-
-class PermissionCheckService {
-  constructor(_prisma?: unknown) {}
-  async checkPermission(..._args: unknown[]) { return true; }
-  async hasPermission(..._args: unknown[]) { return true; }
-  async getTeamIdsWithPermission(..._args: unknown[]): Promise<number[]> { return []; }
-}
 
 type TeamMembershipWithTeam = Membership & {
   team: Team & {
@@ -21,7 +16,7 @@ type TeamMembershipWithTeam = Membership & {
 };
 
 export class TeamAccessUseCase {
-  constructor(private permissionCheckService: PermissionCheckService = new PermissionCheckService()) {}
+  constructor(private permissionCheckService: TeamPermissionService = getTeamPermissionService()) {}
 
   async filterTeamsByEventTypeReadPermission(
     memberships: TeamMembershipWithTeam[],
