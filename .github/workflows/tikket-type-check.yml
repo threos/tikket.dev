@@ -1,0 +1,21 @@
+name: Type check
+
+# Vercel builds skip the Next.js type check (see apps/web/next.config.ts), so this is
+# where type errors get caught for every pull request and every push to main.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  type-check:
+    name: Type Checks
+    uses: ./.github/workflows/check-types.yml
+    secrets: inherit

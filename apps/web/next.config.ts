@@ -225,6 +225,11 @@ const nextConfig = (phase: string): NextConfig => {
 
   return {
     output: process.env.BUILD_STANDALONE === "true" ? "standalone" : undefined,
+    // Type checking takes about a minute of every Vercel deploy. On Vercel it runs in the
+    // "Type check" GitHub Actions workflow instead; self-hosted builds still check types here.
+    typescript: {
+      ignoreBuildErrors: process.env.VERCEL === "1",
+    },
     serverExternalPackages: [
       "deasync",
       "http-cookie-agent",

@@ -343,9 +343,9 @@
     "@calcom/app-store#build:types": {
       "outputs": ["types/**"]
     },
-    "@calcom/trpc#build": {
+    "@calcom/trpc#build:types": {
       "dependsOn": ["@calcom/prisma#post-install"],
-      "outputs": ["./types"]
+      "outputs": ["types/**"]
     },
     "@calcom/web#build": {
       "dependsOn": ["^build", "copy-app-store-static"],
@@ -551,11 +551,11 @@
     },
     "type-check": {
       "cache": false,
-      "dependsOn": ["@calcom/trpc#build"]
+      "dependsOn": ["@calcom/trpc#build:types"]
     },
     "type-check:ci": {
       "cache": false,
-      "dependsOn": ["@calcom/trpc#build"]
+      "dependsOn": ["@calcom/trpc#build:types"]
     },
     "@calcom/prisma#db-reset": {
       "cache": false,

@@ -32,6 +32,6 @@ When asked to move changes to a different branch, use git commands to commit exi
 When making changes that affect tRPC components or after pulling updates that modify tRPC-related files:
 
 1. First run `yarn prisma generate` to ensure all database types are up-to-date
-2. Then run `cd packages/trpc && yarn build` to rebuild the tRPC package
+2. Then run `cd packages/trpc && yarn build:types` to rebuild the tRPC type declarations
 
 This sequence ensures that type definitions are properly generated before building.
