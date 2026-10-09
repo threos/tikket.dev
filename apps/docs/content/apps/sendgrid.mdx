@@ -1,21 +1,20 @@
-# Sendgrid
+# SendGrid
 
-1. **Create a SendGrid account** - Go to [https://signup.sendgrid.com/](https://signup.sendgrid.com/) and create a new SendGrid account.
+Tikket uses SendGrid to send email reminders and for its internal sync services. SendGrid needs an API key and one sender address that SendGrid has approved.
 
-2. **Generate an API key** - Navigate to **Settings** -> **API Keys** and create a new API key.
+## Get the SendGrid API key and sender address
 
-3. **Add API key to .env** - Copy the generated API key and add it to your `.env` file under the field:
+1. Go to [https://signup.sendgrid.com/](https://signup.sendgrid.com/) and create a SendGrid account.
+2. Open "Settings", then "API Keys", and create a new API key.
+3. Copy the API key into your `.env` file under this field:
 
-```
-SENDGRID_API_KEY
-```
+    ```
+    SENDGRID_API_KEY
+    ```
 
-4. **Verify a sender email** - Go to **Settings** -> **Sender Authentication** and verify a single sender.
+4. Open "Settings", then "Sender Authentication", and complete the single sender verification for one email address.
+5. Copy the verified email address into your `.env` file under this field:
 
-5. **Add verified email to .env** - Copy the verified email address and add it to your `.env` file under the field:
-
-```
-SENDGRID_EMAIL
-```
-
-> This app is **required** for Workflows
+    ```
+    SENDGRID_EMAIL
+    ```

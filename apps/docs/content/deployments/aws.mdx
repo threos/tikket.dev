@@ -1,46 +1,47 @@
 # AWS
 
-Deploying Cal.diy on AWS
+This page gives the general steps to deploy Tikket on Amazon Web Services (AWS). The [AWS documentation](https://docs.aws.amazon.com/) describes each AWS service in detail.
 
-## Manual Deployment
+## Prerequisites
 
-### 1. Prerequisites
+Before you start, make sure that you have:
 
-1. Amazon Web Services account
-2. Familiarity with AWS services and management console
-3. Access to the Cal.diy source code
+- An AWS account.
+- Knowledge of the AWS services and the AWS Management Console.
+- Access to the Tikket source code at [https://github.com/threos/tikket.dev](https://github.com/threos/tikket.dev).
 
-### 2. AWS Environment Setup
+## Set up the AWS environment
 
-1. **Create an AWS Account:** If not already set up, create an account on AWS.
-2. **Management Console:** Log in to the AWS Management Console.
+1. If you do not have an AWS account, create one.
+2. Log in to the AWS Management Console.
 
-### 3. Creating AWS Resources
+## Create the AWS resources
 
-1. **Create a New IAM User:** Set up an IAM user with the necessary permissions for deploying and managing the application.
-2. **Set Up Required Services:** Establish services like Amazon EC2, RDS for PostgreSQL, etc., as needed for your application.
+1. Create an IAM user with the permissions that it needs to deploy and manage the application.
+2. Create the services that your deployment needs, such as Amazon EC2 and RDS for PostgreSQL.
 
-### 4. Configuring Cal.diy
+## Configure Tikket
 
-1. **Clone the Repository:** Get the Cal.diy repository onto your local environment.
-2. **Update Configuration:** Modify the .env file to include your AWS resource details (like database endpoints).
+1. Clone the Tikket repository to your local environment:
 
-### 5. Deploying on AWS
+    ```bash
+    git clone https://github.com/threos/tikket.dev.git
+    ```
 
-1. **Deploy Application:** Utilize AWS services such as EC2 or Elastic Beanstalk to deploy the Cal.diy application.
-2. **Database Configuration:** Set up and connect the RDS instance to your application.
-3. **Verify Deployment:** Ensure the application is operational and accessible.
+2. Update the `.env` file with the details of your AWS resources, such as the database endpoint. The [Installation](/installation) page describes the configuration.
 
-### 6. Post-Deployment Steps
+## Deploy on AWS
 
-1. **DNS Setup:** Update your DNS settings to point to your AWS deployment.
-2. **Monitoring and Scaling:** Leverage AWS monitoring tools to keep track of your application's performance and scale resources accordingly.
+1. Deploy the Tikket application with an AWS service such as EC2 or Elastic Beanstalk.
+2. Connect the RDS instance to the application.
+3. Make sure that the application runs and that you can reach it.
 
-### Best Practices
+## After the deployment
 
-1. Regularly update your deployment with the latest Cal.diy releases.
-2. Adhere to AWS's recommended security practices.
+1. Update your DNS records so that your domain points to the AWS deployment.
+2. Use the AWS monitoring tools to watch the performance of the application. Scale the resources when the load requires it.
 
-### Additional Resources
+## Recommendations
 
-[https://docs.aws.amazon.com/](https://docs.aws.amazon.com/)
+- Update your deployment when Tikket publishes a new release.
+- Follow the security practices that AWS recommends.

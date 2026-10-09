@@ -1,29 +1,26 @@
 # Stripe
 
-### Setting up Stripe
+With the Stripe app, Tikket collects a payment when a person books an event. The app needs API keys, an OAuth client ID and a webhook. A webhook is a URL that Stripe calls when a payment event occurs.
 
-1. **Create or log into a Stripe account** - Go to [Stripe](https://stripe.com) and either create a new account or log into an existing one. For testing, activate the Test-Mode toggle in the top right of the Stripe dashboard.
+## Set up Stripe
 
-2. **Save API keys** - Open [Stripe API Keys](https://dashboard.stripe.com/apikeys), then save the token starting with `pk_...` to `NEXT_PUBLIC_STRIPE_PUBLIC_KEY` and `sk_...` to `STRIPE_PRIVATE_KEY` in the `.env` file.
+1. Go to [Stripe](https://stripe.com) and create an account, or log in to an existing one. For testing, activate the "Test-Mode" toggle at the top right of the Stripe dashboard.
+2. Open [Stripe API Keys](https://dashboard.stripe.com/apikeys).
+3. Copy the key that starts with `pk_` into `NEXT_PUBLIC_STRIPE_PUBLIC_KEY` in the `.env` file.
+4. Copy the key that starts with `sk_` into `STRIPE_PRIVATE_KEY` in the `.env` file.
+5. Go to [Stripe Connect Settings](https://dashboard.stripe.com/settings/connect) and activate OAuth for Standard Accounts.
+6. Add this redirect URL. Replace `<Tikket URL>` with the URL where your Tikket instance runs.
 
-3. **Activate OAuth for Standard Accounts** - Go to [Stripe Connect Settings](https://dashboard.stripe.com/settings/connect) and activate OAuth for Standard Accounts.
+    ```
+    <Tikket URL>/api/integrations/stripepayment/callback
+    ```
 
-4. **Add the redirect URL** - Add the following redirect URL, replacing `<Cal.diy URL>` with your application's URL:
+7. Copy your client ID (`ca_...`) into `STRIPE_CLIENT_ID` in the `.env` file.
+8. Open [Stripe Webhooks](https://dashboard.stripe.com/webhooks). Add this URL as the webhook for connected applications:
 
-```
-<Cal.diy URL>/api/integrations/stripepayment/callback
-```
+    ```
+    <Tikket URL>/api/integrations/stripepayment/webhook
+    ```
 
-5. **Save the Stripe Client ID** - Copy your client ID (`ca_...`) to `STRIPE_CLIENT_ID` in the `.env` file.
-
-6. **Set up a Stripe webhook** - Open [Stripe Webhooks](https://dashboard.stripe.com/webhooks) and add:
-
-```
-<Cal.diy URL>/api/integrations/stripepayment/webhook
-```
-
-as the webhook for connected applications.
-
-7. **Select webhook events** - Select all `payment_intent` and `setup_intent` events for the webhook.
-
-8. **Save the webhook secret** - Copy the webhook secret (`whsec_...`) to `STRIPE_WEBHOOK_SECRET` in the `.env` file.
+9. Select all `payment_intent` and `setup_intent` events for the webhook.
+10. Copy the webhook secret (`whsec_...`) into `STRIPE_WEBHOOK_SECRET` in the `.env` file.

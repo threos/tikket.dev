@@ -4,7 +4,7 @@ export default {
   zoom: "Zoom",
   daily: "Daily",
   hubspot: "HubSpot",
-  sendgrid: "Sendgrid",
+  sendgrid: "SendGrid",
   stripe: "Stripe",
   twilio: "Twilio",
   zoho: "Zoho",

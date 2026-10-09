@@ -1,102 +1,80 @@
 # GCP
 
-Deploying Cal.diy on Google Cloud Platform (GCP). In this guide, we will go over the steps to deploy Cal.diy on Google Cloud Platform (GCP). We will cover how to create a virtual machine, configure it, install Docker, and finally deploy the Cal.diy application.
+This page describes how to deploy Tikket on Google Cloud Platform (GCP). You create a virtual machine, open its firewall, install Docker, build the Tikket image and start the container.
 
-## One Click Deployment
+## 1. Create a virtual machine
 
-[![Run on Google Cloud](https://storage.googleapis.com/gweb-cloudblog-publish/images/run_on_google_cloud.max-300x300.png)](https://deploy.cloud.run/?git_repo=https://github.com/calcom/cal.diy)
+1. Open the Google Cloud Platform console at [https://console.cloud.google.com/](https://console.cloud.google.com/).
+2. If you do not have a project, open the "Select a project" menu and select "New Project". Enter a name for your project and click "Create".
+3. Click the navigation menu icon (three horizontal lines) and select "Compute Engine". Then click "VM instances" in the sub-menu.
+4. Click "Create" to create a new virtual machine.
+5. Select the machine type that fits your needs. A machine with 2 vCPUs and 2 to 4 GB of RAM is enough.
+6. In the "Networking" tab, click "Add network". Select the "Default" network and click "Add".
+7. Make sure that the details of the virtual machine are correct, then click "Create".
+8. Write down the public IP of the virtual machine. You need it later.
 
-## Manual Deployment
+## 2. Open the firewall
 
-### 1. Creating a Virtual Machine
+Tikket listens on port 3000 inside the Docker container. The virtual machine must accept traffic on this port.
 
-#### Go to the GCP Console
+1. Click the navigation menu icon and select "Compute Engine". Then click "VM instances" in the sub-menu.
+2. Click the name of your new instance to open its details page.
+3. Open the "Firewalls" tab and click "Add firewall rule".
+4. Select "Allow all" as the source and the destination. Set the protocol to "tcp" and the port to "3000".
+5. Click "Add" to save the rule.
 
-First, open the Google Cloud Platform console by visiting [https://console.cloud.google.com/](https://console.cloud.google.com/).
+## 3. Install Docker
 
-#### Create a New Project
+1. Open a terminal on your local machine and connect to the virtual machine with SSH. The GCP console shows the external IP address or the DNS name of your instance.
 
-If you haven't already, create a new project by clicking on the "Select a project" dropdown menu and selecting "New Project". Enter a name for your project and click on the "Create" button.
+    ```bash
+    gcloud compute ssh --project=[PROJECT_ID] --zone=[ZONE] [INSTANCE_NAME]
+    ```
 
-#### Create a New VM Instance
+    Replace `[PROJECT_ID]` with your project ID, `[ZONE]` with the zone of your instance and `[INSTANCE_NAME]` with the name of your instance. You can also use the web-based SSH in the GCP console.
 
-Click on the navigation menu icon (three horizontal lines) and select "Compute Engine" from the list. Then, click on "VM instances" in the sub-menu. Click on the "Create" button to create a new virtual machine.
+2. On the virtual machine, update the package list and install Docker:
 
-#### Select the Machine Type
+    ```bash
+    sudo apt-get update
+    sudo apt-get install docker.io
+    ```
 
-Choose the machine type that best suits your needs. Ideally, 2 vCPUs and 2-4GB RAM is enough.
+3. Start the Docker service:
 
-#### Set Up Networking
+    ```bash
+    sudo systemctl start docker
+    ```
 
-Make sure the "Networking" tab is selected and click on the "Add network" button. Choose the "Default" network and click on the "Add" button.
+## 4. Deploy Tikket
 
-#### Create the Instance
+Tikket does not publish a Docker image. You build the image from the repository on the virtual machine. The [Docker](/docker) page describes the Docker configuration in detail.
 
-Review the details of your virtual machine and click on the "Create" button to create the instance. Note the public IP of the VM.
+1. On the virtual machine, clone the repository and go into its directory:
 
-### 2. Configuring the Virtual Machine
+    ```bash
+    git clone https://github.com/threos/tikket.dev.git
+    cd tikket.dev
+    ```
 
-Once your virtual machine is created, you need to configure it to allow traffic on port 80.
+2. Copy `.env.example` to `.env` and fill in your configuration:
 
-#### Open Port 80
+    ```bash
+    cp .env.example .env
+    ```
 
-Click on the navigation menu icon (three horizontal lines) and select "Compute Engine" from the list. Then, click on "VM instances" in the sub-menu. Find your newly created instance and click on its name to enter its details page. Click on the "Firewalls" tab and then click on the "Add firewall rule" button. Select "Allow all" as the source and destination, set the protocol to "tcp" and the ports to "80". Click on the "Add" button to save the changes.
+3. Build the Tikket image:
 
-### 3. Installing Docker
+    ```bash
+    DOCKER_BUILDKIT=0 docker compose build calcom
+    ```
 
-Now that your virtual machine is configured, you need to install Docker on it.
+4. Start the Tikket container:
 
-#### Connect to Your Instance
+    ```bash
+    docker compose up -d calcom
+    ```
 
-Open a terminal window on your local machine and use SSH to connect to your virtual machine. You can find the external IP address or DNS name of your instance in the GCP console. Use the following command to connect to your instance:
+5. Open a web browser and go to `http://` followed by the public IP of the virtual machine and `:3000`. The Tikket home page opens.
 
-```bash
-gcloud ssh --project=[PROJECT_ID] --zone=[ZONE] [INSTANCE_NAME]
-```
-
-Replace `[PROJECT_ID]` with your project ID, `[ZONE]` with the zone where your instance is located, and `[INSTANCE_NAME]` with the name of your instance. You can also use web based SSH.
-
-#### Install Docker
-
-Once connected, update the package list and install Docker using the following commands:
-
-```bash
-sudo apt-get update
-sudo apt-get install docker.io
-```
-
-#### Start the Docker Service
-
-Start the Docker service using the following command:
-
-```bash
-sudo systemctl start docker
-```
-
-### 4. Deploying Cal.diy
-
-Now that Docker is installed and running, you can deploy Cal.diy on your virtual machine.
-
-#### Pull the Docker Image
-
-Use the following command to pull the Cal.diy Docker image from Docker Hub:
-
-```bash
-docker pull calcom/cal.diy
-```
-
-#### Run the Docker Container
-
-Run the Docker container using the following command:
-
-```bash
-docker run -d -p 80:80 calcom/cal.diy
-```
-
-This command maps port 80 on your local machine to port 80 inside the container, so you can access Cal.diy from outside the container.
-
-#### Access Cal.diy
-
-Open a web browser and navigate to `http://localhost`. You should now be able to access the Cal.diy homepage.
-
-Congratulations! You have successfully deployed Cal.diy on Google Cloud Platform.
+Tikket now runs on Google Cloud Platform.

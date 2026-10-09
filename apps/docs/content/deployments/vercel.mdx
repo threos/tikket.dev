@@ -2,74 +2,59 @@
 
 ## Requirements
 
-Currently Vercel Pro Plan is required to be able to Deploy this application with Vercel, due to limitations on the number of serverless functions on the free plan.
+A Vercel Pro plan is required to deploy this application on Vercel. The free plan limits the number of serverless functions.
 
-You need a PostgresDB database hosted somewhere. [Supabase](https://supabase.com) offer a great free option while [Heroku](https://heroku.com) offers a low-cost option.
+You also need a PostgreSQL database that runs somewhere that Vercel can reach. [Supabase](https://supabase.com) offers a free option and [Heroku](https://heroku.com) offers a low-cost option.
 
-## One Click Deployment
+## One-click deployment
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/calcom/cal.diy)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/threos/tikket.dev&project-name=tikket.dev&repository-name=tikket.dev)
 
-## Manual Deployment
+## Manual deployment
 
-### Local settings
+### Prepare the database on your machine
 
-1. **Fork and clone the repository**
+1. Fork the repository and clone your fork:
 
-```bash
-git clone https://github.com/<<your-fork>>/cal.diy.git
-```
+    ```bash
+    git clone https://github.com/<your-fork>/tikket.dev.git
+    ```
 
-2. **Set environment variables**
+2. Copy the `.env.example` file in the repository root to `.env` and fill in your configuration. The [Installation](/installation) page and the [Google](/apps/google) page describe the values.
+3. Install the packages with Yarn:
 
-Copy the `.env.example` file in `apps/web`, rename it to `.env` and fill it with your settings (See [manual setup](/installation) and Obtaining the Google API Credentials)
+    ```bash
+    yarn install
+    ```
 
-3. **Install packages with yarn**
+4. Create the database tables from the Prisma schema. The schema is in `packages/prisma/schema.prisma`.
 
-```bash
-yarn install
-```
+    ```bash
+    yarn workspace @calcom/prisma db-deploy
+    ```
 
-4. **Set up the database using the Prisma schema**
+5. Open Prisma Studio to view or edit the database content:
 
-Schema is located in at `packages/prisma/schema.prisma`.
+    ```bash
+    yarn db-studio
+    ```
 
-```bash
-yarn workspace @calcom/prisma db-deploy
-```
+6. Click the `User` model to add a new user record.
+7. Fill in the fields and click `Save 1 Record` to create your first user. Encrypt the password with [BCrypt](https://bcrypt-generator.com/) before you paste it.
+8. Open a browser at port 3000 on your localhost and log in with the user that you created.
 
-5. **Open Prisma Studio**
+If `yarn install` fails during the deployment on Vercel, use `YARN_ENABLE_IMMUTABLE_INSTALLS=false yarn install` as the install command instead.
 
-To look at or modify the database content
+### Deploy on Vercel
 
-```bash
-yarn db-studio
-```
+1. Create a new project on Vercel.
+2. Import the project from your fork of the repository.
+3. Set the environment variables.
+4. Set the root directory to `apps/web`.
+5. Override the build command with:
 
-6. **Open User model**
+    ```bash
+    cd ../.. && yarn build --include-dependencies --no-deps
+    ```
 
-Click on the `User` model to add a new user record.
-
-7. **Create new user**
-
-Fill out the fields (remembering to encrypt your password with [BCrypt](https://bcrypt-generator.com/)) and click `Save 1 Record` to create your first user.
-
-8. **Login**
-
-Open a browser to port 3000 on your localhost and login with your just created, first user.
-
-> Sometimes, yarn install might fail during deployment on Vercel, in which case, you can use `YARN_ENABLE_IMMUTABLE_INSTALLS=false yarn install` as the install command instead.
-
-#### Deployment
-
-1. Create a new project on Vercel
-2. Import from your forked repository
-3. Set the Environment Variables
-4. Set the root directory to `apps/web`
-5. Override the build command to:
-
-```bash
-cd ../.. && yarn build --include-dependencies --no-deps
-```
-
-6. Hit Deploy
+6. Click "Deploy".

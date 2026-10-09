@@ -1,47 +1,42 @@
 # Azure
 
-Deploying Cal.diy on Azure
+This page gives the general steps to deploy Tikket on Microsoft Azure.
 
-## One Click Deployment
+## Prerequisites
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template)
+Before you start, make sure that you have:
 
-## Manual Deployment
+- A Microsoft Azure account.
+- Basic knowledge of the Azure services.
+- Access to the Tikket source code at [https://github.com/threos/tikket.dev](https://github.com/threos/tikket.dev).
 
-### 1. Prerequisites
+## Set up Azure
 
-1. Microsoft Azure account
-2. Basic knowledge of Azure services
-3. Access to Cal.diy source code
+1. If you do not have an Azure account, create one.
+2. Log in to the Azure Portal.
 
-### 2. Azure Setup
+## Create the Azure resources
 
-1. **Create an Azure Account**
-2. **Azure Portal:** Familiarize yourself with the Azure Portal.
+1. In the Azure Portal, create a new resource group for your Tikket project.
+2. Create the services that your deployment needs, such as Azure App Service and Azure Database for PostgreSQL.
 
-### 3. Creating Azure Resources
+## Configure Tikket
 
-1. **Creating Azure Resources:** In the Azure Portal, create a new resource group for your Cal.diy project.
-2. **Create Azure Services:** Set up required services such as Azure App Service, Azure Database for PostgreSQL, etc.
+1. Clone the Tikket repository to your local machine:
 
-#### Create Web App
+    ```bash
+    git clone https://github.com/threos/tikket.dev.git
+    ```
 
-#### Setup Database, Networking
+2. Update the `.env` file with the Azure configuration, such as the database connection string. The [Installation](/installation) page describes the configuration.
 
-#### Setup Monitoring
+## Deploy on Azure
 
-### 4. Configuring Cal.diy
+1. Deploy the Tikket web application with Azure App Service.
+2. Deploy Azure Database for PostgreSQL and connect it to Tikket.
+3. Make sure that the application runs after the deployment.
 
-1. **Clone Repository:** Clone the Cal.diy repository to your local machine.
-2. **Configuration Files:** Update the .env file with necessary Azure configurations (e.g., database connection strings).
+## After the deployment
 
-### 5. Deploying on Azure
-
-1. **Deploying Web App:** Use Azure App Service to deploy the Cal.diy web application.
-2. **Database Setup:** Deploy and configure the Azure Database for PostgreSQL with Cal.diy.
-3. **Deployment Verification:** Ensure that the application is running smoothly post-deployment.
-
-### 6. Post-Deployment Steps
-
-1. **DNS Configuration:** Configure your DNS settings to point to the Azure deployment.
-2. **Monitor and Scale:** Utilize Azure monitoring tools to keep track of performance and scale resources as needed.
+1. Update your DNS records so that your domain points to the Azure deployment.
+2. Use the Azure monitoring tools to watch the performance of the application. Scale the resources when the load requires it.

@@ -1,44 +1,37 @@
 # Google
 
-#### Obtaining the Google API Credentials
+The Google Calendar app and Login with Google both need OAuth credentials from a Google Cloud project. OAuth is the protocol that lets Tikket access a Google account with the permission of its owner.
 
-1. **Open Google API Console** - Go to [Google API Console](https://console.cloud.google.com/apis/dashboard). If you don't have a project in your Google Cloud subscription, create one before proceeding. Under the Dashboard pane, select "Enable APIs and Services".
+## Get the Google API credentials
 
-2. **Search for the Google Calendar API** - In the search box, type "calendar" and select the Google Calendar API search result.
+1. Go to the [Google API Console](https://console.cloud.google.com/apis/dashboard). If your Google Cloud subscription has no project, create one first.
+2. In the Dashboard pane, select "Enable APIs and Services".
+3. In the search box, type "calendar" and select the Google Calendar API search result.
+4. Enable the Google Calendar API.
+5. Open the [OAuth consent screen](https://console.cloud.google.com/apis/credentials/consent) from the side pane. Select the app type (Internal or External) and enter the basic app details on the first page.
+6. On the Scopes page, select "Add or Remove Scopes". Search for Calendar.event and select the scopes `.../auth/calendar.events` and `.../auth/calendar.readonly`. Then click "Update".
+7. On the Test Users page, add the Google accounts that you will use. On the last page, make sure that the details are correct to complete the consent screen configuration.
+8. From the side pane, open [Credentials](https://console.cloud.google.com/apis/credentials). Select "Create Credentials", then "OAuth Client ID".
+9. Select "Web Application" as the application type.
+10. Under "Authorized redirect URIs", add these two URIs. Replace `<Tikket URL>` with the URL where your Tikket instance runs.
 
-3. **Enable the Google Calendar API** - Enable the selected API to proceed.
+    ```
+    <Tikket URL>/api/integrations/googlecalendar/callback
+    <Tikket URL>/api/auth/callback/google
+    ```
 
-4. **Configure the OAuth Consent Screen** - Go to the [OAuth consent screen](https://console.cloud.google.com/apis/credentials/consent) from the side pane. Select the app type (Internal or External) and enter the basic app details on the first page.
+11. Google creates the key and returns you to the Credentials page. Under "OAuth 2.0 Client IDs", select the new client ID, then click "Download JSON".
+12. Copy the contents of the JSON file. Paste the whole string into `GOOGLE_API_CREDENTIALS` in the `.env` and `.env.appStore` files.
+13. In the `.env` file, set this variable. It configures the Google integration as an internal app and restricts login access.
 
-5. **Add Calendar Scopes** - On the Scopes page, select "Add or Remove Scopes". Search for Calendar.event and select the scopes with values `.../auth/calendar.events`, `.../auth/calendar.readonly`, and then click "Update".
+    ```
+    GOOGLE_LOGIN_ENABLED=false
+    ```
 
-6. **Add Test Users** - On the Test Users page, add the Google account(s) you'll be using. Verify details on the last page to complete the consent screen configuration.
+## Add Google Calendar to the Tikket app store
 
-7. **Create OAuth Credentials** - From the side pane, select [Credentials](https://console.cloud.google.com/apis/credentials) and then "Create Credentials". Choose "OAuth Client ID".
+After you add the Google credentials, seed the app store again. The seed adds the Google Calendar app to the app store.
 
-8. **Select Web Application as the Application Type** - Choose "Web Application" as the Application Type.
-
-9. **Add Authorized Redirect URIs** - Under Authorized redirect URI's, add the URIs:
-
+```bash
+yarn db-seed
 ```
-<Cal.diy URL>/api/integrations/googlecalendar/callback
-<Cal.diy URL>/api/auth/callback/google
-```
-
-Replace `<Cal.diy URL>` with the URL where your application runs.
-
-10. **Download the OAuth Client ID JSON** - The key will be created, redirecting you back to the Credentials page. Select the new client ID under "OAuth 2.0 Client IDs", then click "Download JSON". Copy the JSON file contents and paste the entire string into the `.env` and `.env.appStore` files under the `GOOGLE_API_CREDENTIALS` key.
-
-11. **Set the Google Integration as Internal** - In the `.env` file, set the following environment variable:
-
-```
-GOOGLE_LOGIN_ENABLED=false
-```
-
-This will configure the Google integration as an Internal app, restricting login access.
-
-### Adding Google Calendar to Cal.diy App Store
-
-After adding Google credentials, you can now add the Google Calendar App to the app store. Repopulate the App store by running:
-
-1. **Repopulate App Store** - Run `pnpm db-seed` to update the app store and include the newly added Google Calendar integration.

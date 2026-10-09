@@ -1,9 +1,18 @@
 # Northflank
 
-You can deploy Cal.diy on Northflank using the button below.
+Northflank does not have a Tikket template. Deploy Tikket from the repository with the general steps below. The Northflank team published a [guide](https://northflank.com/guides/deploy-calcom-with-northflank) on deploying Cal.com, the upstream project, on their platform.
 
-The team at Northflank also have a [detailed blog post](https://northflank.com/guides/deploy-calcom-with-northflank) on deploying Cal.diy on their platform.
+## Deploy from the repository
 
-## One Click Deployment
+1. Create a new project on Northflank and connect the GitHub repository [https://github.com/threos/tikket.dev](https://github.com/threos/tikket.dev), or your fork of it.
+2. Create a PostgreSQL database for Tikket.
+3. Set the environment variables. The file `.env.example` in the repository root lists them. At a minimum, set `DATABASE_URL`, `DATABASE_DIRECT_URL`, `NEXTAUTH_SECRET`, `CALENDSO_ENCRYPTION_KEY` and `NEXT_PUBLIC_WEBAPP_URL`.
+4. Make sure that the build uses Node.js 18 or newer and Yarn 4.
+5. Set the build command to `yarn build` and the start command to `yarn start`. If Northflank builds from a Dockerfile, you can use the `Dockerfile` in the repository root instead.
+6. Run the database migrations once against the new database, with `DATABASE_URL` set:
 
-[![Deploy on Northflank](https://assets.northflank.com/deploy_to_northflank_smm_36700fb050.svg)](https://app.northflank.com/s/account/stack-templates/deploy-calcom)
+    ```bash
+    yarn workspace @calcom/prisma db-deploy
+    ```
+
+7. Deploy the service and open the URL that Northflank assigns to it.

@@ -1,40 +1,31 @@
 # Zoom
 
-### Obtaining Zoom Client ID and Secret
+The Zoom app creates a Zoom meeting for each booking. The app needs a client ID and a client secret from an OAuth app in the Zoom Marketplace.
 
-1. **Sign into Zoom Marketplace** - Go to [Zoom Marketplace](https://marketplace.zoom.us/) and sign in with your Zoom account.
+## Get the Zoom client ID and secret
 
-2. **Build a New App** - In the upper right, click "Develop" and then "Build App".
+1. Go to the [Zoom Marketplace](https://marketplace.zoom.us/) and sign in with your Zoom account.
+2. At the top right, click "Develop", then "Build App".
+3. Under "OAuth", select "Create".
+4. Enter a name for your app.
+5. Select "User-managed app" as the app type.
+6. Deselect the option to publish the app on the Zoom App Marketplace.
+7. Click "Create".
+8. Copy the client ID and the client secret into your `.env` file under these fields:
 
-3. **Create an OAuth App** - Under "OAuth", select "Create".
+    ```
+    ZOOM_CLIENT_ID
+    ZOOM_CLIENT_SECRET
+    ```
 
-4. **Name Your App** - Provide a name for your app.
+9. Set the redirect URL for OAuth to this URL. Replace `<Tikket URL>` with the URL where your Tikket instance runs.
 
-5. **Choose User-managed App Type** - Select "User-managed app" as the app type.
+    ```
+    <Tikket URL>/api/integrations/zoomvideo/callback
+    ```
 
-6. **Set Marketplace Visibility** - De-select the option to publish the app on the Zoom App Marketplace.
+10. Add the redirect URL to the allow list and enable "Subdomain check". Make sure that the form shows "saved" below it.
+11. Skip the basic information about your app. Go to "Scopes" and click "+ Add Scopes". Select the category "Meeting" on the left and select the scope `meeting:write`.
+12. Click "Done" to save the scope.
 
-7. **Create the App** - Click "Create" to proceed.
-
-8. **Save Client ID and Secret** - Copy the Client ID and Client Secret and add them to your `.env` file under the fields:
-
-```
-ZOOM_CLIENT_ID
-ZOOM_CLIENT_SECRET
-```
-
-9. **Set the Redirect URL for OAuth** - Set the Redirect URL for OAuth to:
-
-```
-<Cal.diy URL>/api/integrations/zoomvideo/callback
-```
-
-Replace `<Cal.diy URL>` with your application URL.
-
-10. **Configure Allow List and Subdomain Check** - Add the redirect URL to the allow list and enable "Subdomain check". Ensure it displays "saved" below the form.
-
-11. **Skip Basic Information and Add Scopes** - You don't need to provide basic information about your app. Instead, go to "Scopes", click "+ Add Scopes", then select the category "Meeting" on the left, and check the scope `meeting:write`.
-
-12. **Save the Scope** - Click "Done" to save the scope settings.
-
-13. **Complete Zoom Integration** - Your Zoom integration is now ready and can be easily added in the Cal.diy settings.
+You can now add the Zoom app in the Tikket app store.
