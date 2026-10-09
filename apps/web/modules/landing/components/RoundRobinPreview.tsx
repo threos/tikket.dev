@@ -1,24 +1,13 @@
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { Icon } from "@calcom/ui/components/icon";
-
-type PreviewHost = {
-  name: string;
-  share: number;
-  isNext: boolean;
-};
-
-const PREVIEW_HOSTS: PreviewHost[] = [
-  { name: "Ada", share: 50, isNext: true },
-  { name: "Ben", share: 30, isNext: false },
-  { name: "Cleo", share: 20, isNext: false },
-];
-
-const NEXT_HOST_NAME = PREVIEW_HOSTS.find((host) => host.isNext)?.name ?? "";
+import Image from "next/image";
+import type { PreviewHost } from "../lib/previewHosts";
 
 // Decorative mock of a round-robin event. It is hidden from assistive tech because the
 // hero copy already says the same thing in words.
-export function RoundRobinPreview() {
+export function RoundRobinPreview({ hosts }: { hosts: PreviewHost[] }) {
   const { t } = useLocale();
+  const nextHostName = hosts.find((host) => host.isNext)?.name ?? "";
 
   return (
     <div aria-hidden="true" className="relative mx-auto w-full max-w-sm select-none lg:mr-0">
@@ -38,11 +27,15 @@ export function RoundRobinPreview() {
         </div>
 
         <ul className="border-subtle mt-5 space-y-3 border-t pt-5">
-          {PREVIEW_HOSTS.map((host) => (
+          {hosts.map((host) => (
             <li key={host.name} className="flex items-center gap-3">
-              <span className="bg-emphasis text-emphasis flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold">
-                {host.name.charAt(0)}
-              </span>
+              <Image
+                src={host.avatarUrl}
+                alt=""
+                width={32}
+                height={32}
+                className="bg-emphasis h-8 w-8 shrink-0 rounded-full object-cover"
+              />
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-emphasis text-sm font-medium">{host.name}</span>
@@ -63,7 +56,7 @@ export function RoundRobinPreview() {
 
         <div className="bg-subtle mt-5 flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm">
           <Icon name="circle-check" className="text-emphasis h-4 w-4 shrink-0" />
-          <span className="text-default">{t("landing_preview_next_up", { name: NEXT_HOST_NAME })}</span>
+          <span className="text-default">{t("landing_preview_next_up", { name: nextHostName })}</span>
         </div>
       </div>
     </div>

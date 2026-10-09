@@ -4,6 +4,7 @@ import { checkOnboardingRedirect } from "@calcom/features/auth/lib/onboardingUti
 import PageWrapper from "@calcom/web/components/PageWrapperAppDir";
 import LandingView from "@calcom/web/modules/landing/landing-view";
 import { resolveLandingMode } from "@calcom/web/modules/landing/lib/landingHost";
+import { pickPreviewHosts } from "@calcom/web/modules/landing/lib/previewHosts";
 import { buildLegacyRequest } from "@lib/buildLegacyCtx";
 import { _generateMetadata } from "app/_utils";
 import { cookies, headers } from "next/headers";
@@ -34,7 +35,7 @@ const RootPage = async () => {
   const landingMode = getLandingMode(headersList.get("x-forwarded-host") ?? headersList.get("host"));
   const landing = (
     <PageWrapper requiresLicense={false} nonce={headersList.get("x-csp-nonce") ?? undefined}>
-      <LandingView />
+      <LandingView previewHosts={pickPreviewHosts()} />
     </PageWrapper>
   );
 

@@ -1,9 +1,10 @@
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { Button } from "@calcom/ui/components/button";
 import { LANDING_GITHUB_URL, LANDING_SIGN_UP_PATH } from "../constants";
+import type { PreviewHost } from "../lib/previewHosts";
 import { RoundRobinPreview } from "./RoundRobinPreview";
 
-export function LandingHero() {
+export function LandingHero({ previewHosts }: { previewHosts: PreviewHost[] }) {
   const { t } = useLocale();
 
   return (
@@ -38,7 +39,7 @@ export function LandingHero() {
           </Button>
         </div>
       </div>
-      <RoundRobinPreview />
+      <RoundRobinPreview hosts={previewHosts} />
     </section>
   );
 }
