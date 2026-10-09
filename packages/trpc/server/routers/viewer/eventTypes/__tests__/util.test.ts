@@ -3,6 +3,13 @@ import { MembershipRole } from "@calcom/prisma/enums";
 import { TRPCError } from "@trpc/server";
 import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
 import type { authedProcedure } from "../../../procedures/authedProcedure";
+
+const { mockCheckPermission } = vi.hoisted(() => ({ mockCheckPermission: vi.fn() }));
+
+vi.mock("@calcom/features/teams/di/TeamPermissionService.container", () => ({
+  getTeamPermissionService: () => ({ checkPermission: mockCheckPermission }),
+}));
+
 import { createEventPbacProcedure, ensureEmailOrPhoneNumberIsPresent } from "../util";
 
 describe("createEventPbacProcedure", () => {
@@ -28,6 +35,7 @@ describe("createEventPbacProcedure", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockCheckPermission.mockResolvedValue(true);
   });
 
   describe("personal events", () => {
@@ -202,7 +210,7 @@ describe("createEventPbacProcedure", () => {
       const procedure = createEventPbacProcedure("eventType.update");
       const middleware = getMiddleware(procedure);
 
-      // PermissionCheckService stub always returns true, so org admin access is always granted
+      // TeamPermissionService also grants access through an admin role in the parent organization
       await expect(
         middleware({
           ctx: mockCtx,
@@ -419,7 +427,6 @@ describe("createEventPbacProcedure", () => {
       const procedure = createEventPbacProcedure("eventType.delete");
       const middleware = getMiddleware(procedure);
 
-      // PermissionCheckService stub always returns true
       await expect(
         middleware({
           ctx: mockCtx,
@@ -439,7 +446,6 @@ describe("createEventPbacProcedure", () => {
       const procedure = createEventPbacProcedure("eventType.create", [MembershipRole.OWNER]);
       const middleware = getMiddleware(procedure);
 
-      // PermissionCheckService stub always returns true
       await expect(
         middleware({
           ctx: mockCtx,
@@ -451,6 +457,32 @@ describe("createEventPbacProcedure", () => {
           meta: undefined,
         })
       ).resolves.not.toThrow();
+      expect(mockCheckPermission).toHaveBeenCalledWith({
+        userId: 1,
+        teamId: 10,
+        permission: "eventType.create",
+        fallbackRoles: [MembershipRole.OWNER],
+      });
+    });
+
+    it("should deny access when the team role does not grant the permission", async () => {
+      mockPrisma.eventType.findUnique = vi.fn().mockResolvedValue(teamEvent);
+      mockCheckPermission.mockResolvedValue(false);
+
+      const procedure = createEventPbacProcedure("eventType.update");
+      const middleware = getMiddleware(procedure);
+
+      await expect(
+        middleware({
+          ctx: mockCtx,
+          input: { id: 2 },
+          next: mockNext,
+          path: "test",
+          type: "mutation",
+          getRawInput: async () => ({}),
+          meta: undefined,
+        })
+      ).rejects.toThrow(TRPCError);
     });
   });
 

@@ -1,19 +1,20 @@
-import { defaultResponderForAppDir } from "app/api/defaultResponderForAppDir";
-import { parseRequestData } from "app/api/parseRequestData";
-import { NextResponse, type NextRequest } from "next/server";
-
-import calcomSignupHandler from "./handlers/calcomSignupHandler";
-import selfHostedSignupHandler from "./handlers/selfHostedHandler";
+import process from "node:process";
+import { isTeamInviteToken } from "@calcom/features/auth/signup/utils/token";
 import { FeaturesRepository } from "@calcom/features/flags/features.repository";
 import { checkRateLimitAndThrowError } from "@calcom/lib/checkRateLimitAndThrowError";
 import { IS_PREMIUM_USERNAME_ENABLED } from "@calcom/lib/constants";
 import getIP from "@calcom/lib/getIP";
 import { HttpError } from "@calcom/lib/http-error";
 import logger from "@calcom/lib/logger";
-import { piiHasher } from "@calcom/lib/server/PiiHasher";
 import { checkCfTurnstileToken } from "@calcom/lib/server/checkCfTurnstileToken";
+import { piiHasher } from "@calcom/lib/server/PiiHasher";
 import { prisma } from "@calcom/prisma";
 import { signupSchema } from "@calcom/prisma/zod-utils";
+import { defaultResponderForAppDir } from "app/api/defaultResponderForAppDir";
+import { parseRequestData } from "app/api/parseRequestData";
+import { type NextRequest, NextResponse } from "next/server";
+import calcomSignupHandler from "./handlers/calcomSignupHandler";
+import selfHostedSignupHandler from "./handlers/selfHostedHandler";
 
 async function ensureSignupIsEnabled(body: Record<string, string>) {
   const { token } = signupSchema
@@ -22,8 +23,9 @@ async function ensureSignupIsEnabled(body: Record<string, string>) {
     })
     .parse(body);
 
-  // Still allow signups if there is a team invite
-  if (token) return;
+  // Still allow signups for a live team invite. Any other token (e.g. one left behind by a deleted
+  // team) must not bypass disabled signup.
+  if (token && (await isTeamInviteToken({ token }))) return;
 
   const featuresRepository = new FeaturesRepository(prisma);
   const signupDisabled = await featuresRepository.checkIfFeatureIsEnabledGlobally("disable-signup");

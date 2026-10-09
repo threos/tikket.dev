@@ -1,7 +1,9 @@
+import process from "node:process";
 import { EventTypeRepository } from "@calcom/features/eventtypes/repositories/eventTypeRepository";
 import { hasFilter } from "@calcom/features/filters/lib/hasFilter";
 import { MembershipRepository } from "@calcom/features/membership/repositories/MembershipRepository";
 import { ProfileRepository } from "@calcom/features/profile/repositories/ProfileRepository";
+import { getTeamPermissionService } from "@calcom/features/teams/di/TeamPermissionService.container";
 import { UserRepository } from "@calcom/features/users/repositories/UserRepository";
 import { getPlaceholderAvatar } from "@calcom/lib/defaultAvatarImage";
 import { ErrorCode } from "@calcom/lib/errorCodes";
@@ -15,12 +17,6 @@ import { MembershipRole, SchedulingType } from "@calcom/prisma/enums";
 import { eventTypeMetaDataSchemaWithUntypedApps, teamMetadataSchema } from "@calcom/prisma/zod-utils";
 import { orderBy } from "lodash";
 
-class PermissionCheckService {
-  constructor(_prisma?: unknown) {}
-  async checkPermission(..._args: unknown[]) { return true; }
-  async hasPermission(..._args: unknown[]) { return true; }
-  async getTeamIdsWithPermission(..._args: unknown[]): Promise<number[]> { return []; }
-}
 const getBookerBaseUrl = async (_orgSlug?: string | number | null): Promise<string> =>
   process.env.NEXT_PUBLIC_WEBAPP_URL || "https://app.cal.com";
 const getBookerBaseUrlSync = (_orgSlug?: string | number | null): string =>
@@ -58,19 +54,12 @@ export const getEventTypesByViewer = async (user: User, filters?: Filters) => {
     shouldListUserEvents = true;
   }
 
-  const permissionCheckService = new PermissionCheckService();
-  const [teamsWithEventTypeReadPermission, teamsWithEventTypeUpdatePermission] = await Promise.all([
-    permissionCheckService.getTeamIdsWithPermission({
-      userId: user.id,
-      permission: "eventType.read",
-      fallbackRoles: [MembershipRole.MEMBER, MembershipRole.ADMIN, MembershipRole.OWNER],
-    }),
-    permissionCheckService.getTeamIdsWithPermission({
-      userId: user.id,
-      permission: "eventType.update",
-      fallbackRoles: [MembershipRole.ADMIN, MembershipRole.OWNER],
-    }),
-  ]);
+  const permissionCheckService = getTeamPermissionService();
+  const teamsWithEventTypeUpdatePermission = await permissionCheckService.getTeamIdsWithPermission({
+    userId: user.id,
+    permission: "eventType.update",
+    fallbackRoles: [MembershipRole.ADMIN, MembershipRole.OWNER],
+  });
 
   const eventTypeRepo = new EventTypeRepository(prisma);
   const [profileMemberships, profileEventTypes] = await Promise.all([
@@ -292,7 +281,8 @@ export const getEventTypesByViewer = async (user: User, filters?: Filters) => {
             },
             metadata: {
               membershipCount: team.members.length,
-              readOnly: !teamsWithEventTypeReadPermission.includes(team.id),
+              // Every member can read a team's event types; only admins and owners may edit them.
+              readOnly: !teamsWithEventTypeUpdatePermission.includes(team.id),
             },
             eventTypes: eventTypes
               .filter(filterByTeamIds)

@@ -1,22 +1,17 @@
+import { getTeamPermissionService } from "@calcom/features/teams/di/TeamPermissionService.container";
+import type { TeamPermissionService } from "@calcom/features/teams/services/TeamPermissionService";
 import { UserRepository } from "@calcom/features/users/repositories/UserRepository";
 import type { PrismaClient } from "@calcom/prisma";
 import { MembershipRole } from "@calcom/prisma/enums";
 import { BookingRepository } from "../repositories/BookingRepository";
 
-class PermissionCheckService {
-  constructor(_prisma?: unknown) {}
-  async checkPermission(..._args: unknown[]) { return true; }
-  async hasPermission(..._args: unknown[]) { return true; }
-  async getTeamIdsWithPermission(..._args: unknown[]): Promise<number[]> { return []; }
-}
-
 type BookingForAccessCheck = NonNullable<Awaited<ReturnType<BookingRepository["findByUidIncludeEventType"]>>>;
 
 export class BookingAccessService {
-  private permissionCheckService: PermissionCheckService;
+  private permissionCheckService: TeamPermissionService;
 
   constructor(private prismaClient: PrismaClient) {
-    this.permissionCheckService = new PermissionCheckService();
+    this.permissionCheckService = getTeamPermissionService();
   }
 
   private isUserAHost(userId: number, booking: BookingForAccessCheck): boolean {

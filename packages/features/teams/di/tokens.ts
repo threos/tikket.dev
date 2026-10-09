@@ -1,0 +1,16 @@
+export const TEAMS_DI_TOKENS = {
+  TEAM_REPOSITORY: Symbol("TeamRepository"),
+  TEAM_REPOSITORY_MODULE: Symbol("TeamRepositoryModule"),
+  TEAM_MEMBERSHIP_REPOSITORY: Symbol("TeamMembershipRepository"),
+  TEAM_MEMBERSHIP_REPOSITORY_MODULE: Symbol("TeamMembershipRepositoryModule"),
+  USER_LOOKUP_REPOSITORY: Symbol("UserLookupRepository"),
+  USER_LOOKUP_REPOSITORY_MODULE: Symbol("UserLookupRepositoryModule"),
+  VERIFICATION_TOKEN_REPOSITORY: Symbol("VerificationTokenRepository"),
+  VERIFICATION_TOKEN_REPOSITORY_MODULE: Symbol("VerificationTokenRepositoryModule"),
+  TEAM_PERMISSION_SERVICE: Symbol("TeamPermissionService"),
+  TEAM_PERMISSION_SERVICE_MODULE: Symbol("TeamPermissionServiceModule"),
+  TEAM_SERVICE: Symbol("TeamService"),
+  TEAM_SERVICE_MODULE: Symbol("TeamServiceModule"),
+  TEAM_MEMBERSHIP_SERVICE: Symbol("TeamMembershipService"),
+  TEAM_MEMBERSHIP_SERVICE_MODULE: Symbol("TeamMembershipServiceModule"),
+};

@@ -1,16 +1,10 @@
+import { getTeamPermissionService } from "@calcom/features/teams/di/TeamPermissionService.container";
 import { MembershipRole } from "@calcom/prisma/enums";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import authedProcedure from "./authedProcedure";
 
 type PermissionString = string;
-class PermissionCheckService {
-  constructor(_prisma?: unknown) {}
-  async checkPermission(..._args: unknown[]) { return true; }
-  async hasPermission(..._args: unknown[]) { return true; }
-  async getTeamIdsWithPermission(..._args: unknown[]): Promise<number[]> { return []; }
-}
-
 /**
  * Creates a procedure that checks team-level PBAC permissions.
  * The teamId is expected to come from input.teamId.
@@ -30,8 +24,8 @@ function createTeamPbacProcedure(
       })
     )
     .use(async ({ ctx, input, next }) => {
-      const permissionCheckService: PermissionCheckService = new PermissionCheckService();
-      const hasPermission: boolean = await permissionCheckService.checkPermission({
+      const permissionCheckService = getTeamPermissionService();
+      const hasPermission = await permissionCheckService.checkPermission({
         userId: ctx.user.id,
         teamId: input.teamId,
         permission,
@@ -71,7 +65,7 @@ function createOrgPbacProcedure(
       });
     }
 
-    const permissionCheckService = new PermissionCheckService();
+    const permissionCheckService = getTeamPermissionService();
     const hasPermission = await permissionCheckService.checkPermission({
       userId: ctx.user.id,
       teamId: organizationId,

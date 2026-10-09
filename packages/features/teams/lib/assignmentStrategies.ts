@@ -54,7 +54,11 @@ const weightedRoundRobin: AssignmentStrategy = {
   fields: { schedulingType: "ROUND_ROBIN", isRRWeightsEnabled: true },
 };
 
-export const ASSIGNMENT_STRATEGIES: readonly AssignmentStrategy[] = [roundRobin, weightedRoundRobin, collective];
+export const ASSIGNMENT_STRATEGIES: readonly AssignmentStrategy[] = [
+  roundRobin,
+  weightedRoundRobin,
+  collective,
+];
 
 const strategiesById = new Map<AssignmentStrategyId, AssignmentStrategy>(
   ASSIGNMENT_STRATEGIES.map((strategy) => [strategy.id, strategy])

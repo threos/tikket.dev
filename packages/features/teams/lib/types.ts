@@ -28,6 +28,8 @@ export type TeamMemberDto = {
   membershipId: number;
   userId: number;
   name: string | null;
+  // Masked (e.g. "b•••@example.com") while `accepted` is false, so an invite can't be used to look up
+  // someone's address.
   email: string;
   username: string | null;
   avatarUrl: string | null;
