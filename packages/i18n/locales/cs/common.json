@@ -3739,7 +3739,7 @@
   "link": "Odkaz",
   "rows_per_page": "řádků na stránku",
   "pagination_status": "{{currentRange}} z {{totalItems}}",
-  "tip_username_plus": "Tip: Mezi uživatelská jména můžete přidat '+' (např. cal.diy/anna+brian), abyste se setkali s více lidmi",
+  "tip_username_plus": "Tip: Mezi uživatelská jména můžete přidat '+' (např. tikket.dev/anna+brian), abyste se setkali s více lidmi",
   "user_has_no_team_yet": "Zatím nemáte žádný tým",
   "no_team_members": "Zatím nemáte žádné členy týmu",
   "recurring_event_doesnt_support_seats": "Opakující se událost nepodporuje funkci míst. Změňte ji na neopakující se pro povolení míst.",

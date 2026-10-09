@@ -20,17 +20,17 @@ export default function Credits() {
   return (
     <small className="text-default mx-3 mb-2 mt-1 hidden text-[0.5rem] opacity-50 lg:block">
       &copy; {new Date().getFullYear()}{" "}
-      <Link href="https://go.cal.com/credits" target="_blank" className="hover:underline">
+      <Link href="https://tikket.dev" target="_blank" className="hover:underline">
         {COMPANY_NAME}
       </Link>{" "}
       {hasMounted && (
         <>
-          <Link href="https://go.cal.com/releases" target="_blank" className="hover:underline">
+          <Link href="https://github.com/threos/tikket.dev/releases" target="_blank" className="hover:underline">
             {CalComVersion}
           </Link>
           {vercelCommitHash && IS_CALCOM ? (
             <Link
-              href={`https://github.com/calcom/cal.diy/commit/${vercelCommitHash}`}
+              href={`https://github.com/threos/tikket.dev/commit/${vercelCommitHash}`}
               target="_blank"
               className="hover:underline">
               {commitHash}

@@ -3734,7 +3734,7 @@
   "link": "Lenke",
   "rows_per_page": "rader per side",
   "pagination_status": "{{currentRange}} av {{totalItems}}",
-  "tip_username_plus": "Tips: Du kan legge til et '+' mellom brukernavn: cal.diy/anna+brian for å lage et dynamisk gruppemøte",
+  "tip_username_plus": "Tips: Du kan legge til et '+' mellom brukernavn: tikket.dev/anna+brian for å lage et dynamisk gruppemøte",
   "user_has_no_team_yet": "Du har ikke et team ennå",
   "no_team_members": "Du har ingen teammedlemmer ennå",
   "recurring_event_doesnt_support_seats": "Gjentakende arrangement støtter ikke seterfunksjonen. Gjør det til et ikke-gjentakende arrangement for å aktivere seter.",

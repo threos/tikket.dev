@@ -3739,7 +3739,7 @@
   "link": "Link",
   "rows_per_page": "rækker pr. side",
   "pagination_status": "{{currentRange}} af {{totalItems}}",
-  "tip_username_plus": "Tip: Du kan tilføje et '+' mellem brugernavne: cal.diy/anna+brian for at lave et dynamisk gruppemøde",
+  "tip_username_plus": "Tip: Du kan tilføje et '+' mellem brugernavne: tikket.dev/anna+brian for at lave et dynamisk gruppemøde",
   "user_has_no_team_yet": "Du har ikke et team endnu",
   "no_team_members": "Du har ikke nogen teammedlemmer endnu",
   "recurring_event_doesnt_support_seats": "Tilbagevendende begivenheder understøtter ikke sædefunktionen. Gør den ikke-tilbagevendende for at aktivere sæder.",

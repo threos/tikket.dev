@@ -3739,7 +3739,7 @@
   "link": "Esteka",
   "rows_per_page": "errenkada orrialdeko",
   "pagination_status": "{{currentRange}} / {{totalItems}}",
-  "tip_username_plus": "Aholkua: '+' bat gehitu dezakezu erabiltzaile-izenen artean: cal.diy/anna+brian talde-bilera dinamiko bat sortzeko",
+  "tip_username_plus": "Aholkua: '+' bat gehitu dezakezu erabiltzaile-izenen artean: tikket.dev/anna+brian talde-bilera dinamiko bat sortzeko",
   "user_has_no_team_yet": "Oraindik ez duzu talderik",
   "no_team_members": "Oraindik ez dituzu taldekiderik",
   "recurring_event_doesnt_support_seats": "Ekitaldi errepikakorrak ez du eserlekuen ezaugarria onartzen. Ez-errepikakor bihurtu eserlekuak gaitzeko.",

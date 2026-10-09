@@ -3739,7 +3739,7 @@
   "link": "Enllaç",
   "rows_per_page": "files per pàgina",
   "pagination_status": "{{currentRange}} de {{totalItems}}",
-  "tip_username_plus": "Consell: Pots afegir un '+' entre noms d'usuari (p. ex. cal.diy/anna+brian) per reunir-te amb diverses persones",
+  "tip_username_plus": "Consell: Pots afegir un '+' entre noms d'usuari (p. ex. tikket.dev/anna+brian) per reunir-te amb diverses persones",
   "user_has_no_team_yet": "Encara no tens cap equip",
   "no_team_members": "Encara no tens membres a l'equip",
   "recurring_event_doesnt_support_seats": "Els esdeveniments recurrents no admeten la funció de seients. Feu-lo no recurrent per habilitar els seients.",

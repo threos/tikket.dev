@@ -3739,7 +3739,7 @@
   "link": "Link",
   "rows_per_page": "sor oldalanként",
   "pagination_status": "{{currentRange}} / {{totalItems}}",
-  "tip_username_plus": "Tipp: Hozzáadhat egy '+' jelet a felhasználónevek közé: cal.diy/anna+brian dinamikus csoportos megbeszélés létrehozásához",
+  "tip_username_plus": "Tipp: Hozzáadhat egy '+' jelet a felhasználónevek közé: tikket.dev/anna+brian dinamikus csoportos megbeszélés létrehozásához",
   "user_has_no_team_yet": "Még nincs csapatod",
   "no_team_members": "Még nincsenek csapattagjaid",
   "recurring_event_doesnt_support_seats": "Az ismétlődő esemény nem támogatja a helyek funkciót. Állítsa be nem ismétlődőre a helyek engedélyezéséhez.",

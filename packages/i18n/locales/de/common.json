@@ -3739,7 +3739,7 @@
   "link": "Link",
   "rows_per_page": "Zeilen pro Seite",
   "pagination_status": "{{currentRange}} von {{totalItems}}",
-  "tip_username_plus": "Tipp: Sie können ein '+' zwischen Benutzernamen einfügen: cal.diy/anna+brian, um ein dynamisches Gruppenmeeting zu erstellen",
+  "tip_username_plus": "Tipp: Sie können ein '+' zwischen Benutzernamen einfügen: tikket.dev/anna+brian, um ein dynamisches Gruppenmeeting zu erstellen",
   "user_has_no_team_yet": "Sie haben noch kein Team",
   "no_team_members": "Sie haben noch keine Teammitglieder",
   "recurring_event_doesnt_support_seats": "Wiederkehrende Events unterstützen die Sitzplatzfunktion nicht. Machen Sie es zu einem einmaligen Event, um Sitzplätze zu aktivieren.",

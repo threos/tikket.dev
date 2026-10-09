@@ -3666,7 +3666,7 @@
   "link": "Liên kết",
   "rows_per_page": "hàng mỗi trang",
   "pagination_status": "{{currentRange}} trên {{totalItems}}",
-  "tip_username_plus": "Mẹo: Bạn có thể thêm dấu '+' giữa các tên người dùng (ví dụ: cal.diy/anna+brian) để gặp nhiều người cùng lúc",
+  "tip_username_plus": "Mẹo: Bạn có thể thêm dấu '+' giữa các tên người dùng (ví dụ: tikket.dev/anna+brian) để gặp nhiều người cùng lúc",
   "user_has_no_team_yet": "Bạn chưa có nhóm nào",
   "no_team_members": "Bạn chưa có thành viên nhóm nào",
   "recurring_event_doesnt_support_seats": "Sự kiện định kỳ không hỗ trợ tính năng chỗ ngồi. Hãy đặt thành không định kỳ để bật tính năng chỗ ngồi.",

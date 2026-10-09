@@ -3714,7 +3714,7 @@
   "link": "Link",
   "rows_per_page": "rijen per pagina",
   "pagination_status": "{{currentRange}} van {{totalItems}}",
-  "tip_username_plus": "Tip: Je kunt een '+' tussen gebruikersnamen toevoegen: cal.diy/anna+brian om een dynamische groepsbijeenkomst te maken",
+  "tip_username_plus": "Tip: Je kunt een '+' tussen gebruikersnamen toevoegen: tikket.dev/anna+brian om een dynamische groepsbijeenkomst te maken",
   "user_has_no_team_yet": "U heeft nog geen team",
   "no_team_members": "U heeft nog geen teamleden",
   "recurring_event_doesnt_support_seats": "Terugkerend evenement ondersteunt geen stoelfunctie. Maak het niet-terugkerend om stoelen in te schakelen.",

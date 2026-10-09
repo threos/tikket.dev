@@ -3666,7 +3666,7 @@
   "link": "Länk",
   "rows_per_page": "rader per sida",
   "pagination_status": "{{currentRange}} av {{totalItems}}",
-  "tip_username_plus": "Tips: Du kan lägga till ett '+' mellan användarnamn (t.ex. cal.diy/anna+brian) för att boka med flera personer",
+  "tip_username_plus": "Tips: Du kan lägga till ett '+' mellan användarnamn (t.ex. tikket.dev/anna+brian) för att boka med flera personer",
   "user_has_no_team_yet": "Du har inget team ännu",
   "no_team_members": "Du har inga teammedlemmar ännu",
   "recurring_event_doesnt_support_seats": "Återkommande evenemang stöder inte platser-funktionen. Gör det icke-återkommande för att aktivera platser.",

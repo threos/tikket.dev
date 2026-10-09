@@ -3739,7 +3739,7 @@
   "link": "رابط",
   "rows_per_page": "صفوف في الصفحة",
   "pagination_status": "{{currentRange}} من {{totalItems}}",
-  "tip_username_plus": "نصيحة: يمكنك إضافة '+' بين أسماء المستخدمين: cal.diy/anna+brian لإنشاء اجتماع جماعي ديناميكي",
+  "tip_username_plus": "نصيحة: يمكنك إضافة '+' بين أسماء المستخدمين: tikket.dev/anna+brian لإنشاء اجتماع جماعي ديناميكي",
   "user_has_no_team_yet": "ليس لديك فريق بعد",
   "no_team_members": "ليس لديك أعضاء في الفريق بعد",
   "recurring_event_doesnt_support_seats": "الفعالية المتكررة لا تدعم ميزة المقاعد. اجعلها غير متكررة لتمكين المقاعد.",

@@ -3714,7 +3714,7 @@
   "link": "Link",
   "rows_per_page": "linhas por página",
   "pagination_status": "{{currentRange}} de {{totalItems}}",
-  "tip_username_plus": "Dica: Você pode adicionar um '+' entre nomes de usuário: cal.diy/anna+brian para criar uma reunião de grupo dinâmica",
+  "tip_username_plus": "Dica: Você pode adicionar um '+' entre nomes de usuário: tikket.dev/anna+brian para criar uma reunião de grupo dinâmica",
   "user_has_no_team_yet": "Ainda não tem uma equipa",
   "no_team_members": "Ainda não tem membros na equipa",
   "recurring_event_doesnt_support_seats": "Eventos recorrentes não suportam o recurso de assentos. Torne-o não recorrente para habilitar assentos.",

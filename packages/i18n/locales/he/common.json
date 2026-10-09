@@ -3739,7 +3739,7 @@
   "link": "קישור",
   "rows_per_page": "שורות לעמוד",
   "pagination_status": "{{currentRange}} מתוך {{totalItems}}",
-  "tip_username_plus": "טיפ: אתה יכול להוסיף '+' בין שמות משתמשים: cal.diy/anna+brian ליצירת פגישת קבוצה דינמית",
+  "tip_username_plus": "טיפ: אתה יכול להוסיף '+' בין שמות משתמשים: tikket.dev/anna+brian ליצירת פגישת קבוצה דינמית",
   "user_has_no_team_yet": "עדיין אין לך צוות",
   "no_team_members": "עדיין אין לך חברי צוות",
   "recurring_event_doesnt_support_seats": "אירוע חוזר אינו תומך בתכונת המושבים. הפוך אותו לאירוע לא חוזר כדי לאפשר מושבים.",

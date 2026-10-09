@@ -3739,7 +3739,7 @@
   "link": "Link",
   "rows_per_page": "rida lehel",
   "pagination_status": "{{currentRange}} / {{totalItems}}",
-  "tip_username_plus": "Nõuanne: saate lisada '+' kasutajanimede vahele: cal.diy/anna+brian, et luua dünaamiline grupikoosolek.",
+  "tip_username_plus": "Nõuanne: saate lisada '+' kasutajanimede vahele: tikket.dev/anna+brian, et luua dünaamiline grupikoosolek.",
   "user_has_no_team_yet": "Teil pole veel meeskonda",
   "no_team_members": "Teil pole veel meeskonnaliikmeid",
   "recurring_event_doesnt_support_seats": "Korduv sündmus ei toeta kohtade funktsiooni. Muutke see mittekorduvaks, et lubada kohtade funktsioon.",

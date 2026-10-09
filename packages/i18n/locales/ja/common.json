@@ -3774,7 +3774,7 @@
   "link": "リンク",
   "rows_per_page": "ページあたりの行数",
   "pagination_status": "{{totalItems}}件中{{currentRange}}件",
-  "tip_username_plus": "ヒント：ユーザー名の間に「+」を追加できます：cal.diy/anna+brianで動的なグループミーティングを作成できます",
+  "tip_username_plus": "ヒント：ユーザー名の間に「+」を追加できます：tikket.dev/anna+brianで動的なグループミーティングを作成できます",
   "user_has_no_team_yet": "まだチームがありません",
   "no_team_members": "まだチームメンバーがいません",
   "recurring_event_doesnt_support_seats": "定期的なイベントは座席機能をサポートしていません。座席を有効にするには非定期的にしてください。",

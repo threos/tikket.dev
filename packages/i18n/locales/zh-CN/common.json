@@ -3666,7 +3666,7 @@
   "link": "链接",
   "rows_per_page": "每页行数",
   "pagination_status": "第{{currentRange}}项，共{{totalItems}}项",
-  "tip_username_plus": "提示：你可以在用户名之间添加“+”（如 cal.diy/anna+brian）来与多人会面",
+  "tip_username_plus": "提示：你可以在用户名之间添加“+”（如 tikket.dev/anna+brian）来与多人会面",
   "user_has_no_team_yet": "您还没有团队",
   "no_team_members": "您还没有团队成员",
   "recurring_event_doesnt_support_seats": "重复活动不支持座位功能。请将其设置为非重复以启用座位功能。",

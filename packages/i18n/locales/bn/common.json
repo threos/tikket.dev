@@ -3739,7 +3739,7 @@
   "link": "লিঙ্ক",
   "rows_per_page": "প্রতি পৃষ্ঠায় সারি",
   "pagination_status": "{{totalItems}}-এর মধ্যে {{currentRange}}",
-  "tip_username_plus": "টিপ: আপনি ইউজারনেমের মাঝে '+' যোগ করতে পারেন: cal.diy/anna+brian একটি গতিশীল গ্রুপ মিটিং তৈরি করতে",
+  "tip_username_plus": "টিপ: আপনি ইউজারনেমের মাঝে '+' যোগ করতে পারেন: tikket.dev/anna+brian একটি গতিশীল গ্রুপ মিটিং তৈরি করতে",
   "user_has_no_team_yet": "আপনার এখনও কোনো টিম নেই",
   "no_team_members": "আপনার এখনও কোনো টিম সদস্য নেই",
   "recurring_event_doesnt_support_seats": "পুনরাবৃত্ত ইভেন্ট সিট ফিচার সমর্থন করে না। সিট সক্ষম করতে এটিকে অপুনরাবৃত্ত করুন।",

@@ -3739,7 +3739,7 @@
   "link": "Linkki",
   "rows_per_page": "riviä per sivu",
   "pagination_status": "{{currentRange}} / {{totalItems}}",
-  "tip_username_plus": "Vinkki: Voit lisätä '+'-merkin käyttäjänimien väliin: cal.diy/anna+brian luodaksesi dynaamisen ryhmätapaamisen",
+  "tip_username_plus": "Vinkki: Voit lisätä '+'-merkin käyttäjänimien väliin: tikket.dev/anna+brian luodaksesi dynaamisen ryhmätapaamisen",
   "user_has_no_team_yet": "Sinulla ei ole vielä tiimiä",
   "no_team_members": "Sinulla ei ole vielä tiimin jäseniä",
   "recurring_event_doesnt_support_seats": "Toistuva tapahtuma ei tue paikkaominaisuutta. Tee siitä ei-toistuva ottaaksesi paikat käyttöön.",

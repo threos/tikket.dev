@@ -3739,7 +3739,7 @@
   "link": "Link",
   "rows_per_page": "səhifə başına sətir",
   "pagination_status": "{{totalItems}} içərisindən {{currentRange}}",
-  "tip_username_plus": "Məsləhət: İstifadəçi adları arasında '+' əlavə edə bilərsiniz: cal.diy/anna+brian dinamik qrup görüşü yaratmaq üçün",
+  "tip_username_plus": "Məsləhət: İstifadəçi adları arasında '+' əlavə edə bilərsiniz: tikket.dev/anna+brian dinamik qrup görüşü yaratmaq üçün",
   "user_has_no_team_yet": "Hələ komandanız yoxdur",
   "no_team_members": "Hələ komanda üzvləriniz yoxdur",
   "recurring_event_doesnt_support_seats": "Təkrarlanan tədbir yerlər funksiyasını dəstəkləmir. Yerləri aktivləşdirmək üçün onu təkrarlanmayan edin.",

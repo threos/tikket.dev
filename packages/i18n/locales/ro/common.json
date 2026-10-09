@@ -3734,7 +3734,7 @@
   "link": "Link",
   "rows_per_page": "rânduri pe pagină",
   "pagination_status": "{{currentRange}} din {{totalItems}}",
-  "tip_username_plus": "Sfat: Puteți adăuga un '+' între numele de utilizator: cal.diy/anna+brian pentru a crea o întâlnire de grup dinamică",
+  "tip_username_plus": "Sfat: Puteți adăuga un '+' între numele de utilizator: tikket.dev/anna+brian pentru a crea o întâlnire de grup dinamică",
   "user_has_no_team_yet": "Nu aveți încă o echipă",
   "no_team_members": "Nu aveți încă membri în echipă",
   "recurring_event_doesnt_support_seats": "Evenimentul recurent nu acceptă funcția de locuri. Faceți-l nerecurent pentru a activa locurile.",

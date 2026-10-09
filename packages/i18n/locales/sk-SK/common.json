@@ -3714,7 +3714,7 @@
   "link": "Odkaz",
   "rows_per_page": "riadkov na stránku",
   "pagination_status": "{{currentRange}} z {{totalItems}}",
-  "tip_username_plus": "Tip: Medzi používateľské mená môžete pridať znak '+': cal.diy/anna+brian na vytvorenie dynamického skupinového stretnutia",
+  "tip_username_plus": "Tip: Medzi používateľské mená môžete pridať znak '+': tikket.dev/anna+brian na vytvorenie dynamického skupinového stretnutia",
   "user_has_no_team_yet": "Zatiaľ nemáte žiadny tím",
   "no_team_members": "Zatiaľ nemáte žiadnych členov tímu",
   "recurring_event_doesnt_support_seats": "Opakujúca sa udalosť nepodporuje funkciu miest. Zmeňte ju na neopakujúcu sa, aby ste povolili miesta.",

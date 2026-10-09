@@ -3714,7 +3714,7 @@
   "link": "링크",
   "rows_per_page": "페이지당 행 수",
   "pagination_status": "{{totalItems}}개 중 {{currentRange}}개",
-  "tip_username_plus": "팁: 사용자 이름 사이에 '+'를 추가할 수 있습니다: cal.diy/anna+brian으로 동적 그룹 미팅을 만들 수 있습니다",
+  "tip_username_plus": "팁: 사용자 이름 사이에 '+'를 추가할 수 있습니다: tikket.dev/anna+brian으로 동적 그룹 미팅을 만들 수 있습니다",
   "user_has_no_team_yet": "아직 팀이 없습니다",
   "no_team_members": "아직 팀원이 없습니다",
   "recurring_event_doesnt_support_seats": "반복 이벤트는 좌석 기능을 지원하지 않습니다. 좌석을 활성화하려면 비반복으로 설정하세요.",
