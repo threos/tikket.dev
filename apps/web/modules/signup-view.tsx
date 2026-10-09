@@ -511,15 +511,8 @@ export default function Signup({
                           setPremium={(value) => setPremiumUsername(value)}
                           addOnLeading={
                             orgSlug
-                              ? truncateDomain(
-                                  `${WEBAPP_URL.replace(
-                                    URL_PROTOCOL_REGEX,
-                                    ""
-                                  )}/`
-                                )
-                              : truncateDomain(
-                                  `${WEBSITE_URL.replace(URL_PROTOCOL_REGEX, "")}/`
-                                )
+                              ? truncateDomain(`${WEBAPP_URL.replace(URL_PROTOCOL_REGEX, "")}/`)
+                              : truncateDomain(`${WEBSITE_URL.replace(URL_PROTOCOL_REGEX, "")}/`)
                           }
                         />
                       ) : null}
@@ -627,22 +620,14 @@ export default function Signup({
                               has_prepopulated_username: !!prepopulateFormValues?.username,
                             });
                             setIsGoogleLoading(true);
-                            const baseUrl = process.env.NEXT_PUBLIC_WEBAPP_URL;
-                            const GOOGLE_AUTH_URL = `${baseUrl}/auth/sso/google`;
-                            const searchQueryParams = new URLSearchParams();
                             if (prepopulateFormValues?.username) {
-                              // If username is present we save it in query params to check for premium
-                              searchQueryParams.set("username", prepopulateFormValues.username);
                               localStorage.setItem("username", prepopulateFormValues.username);
                             }
-                            if (token && prepopulateFormValues?.email) {
-                              searchQueryParams.set("email", prepopulateFormValues.email);
-                            }
-                            const url = searchQueryParams.toString()
-                              ? `${GOOGLE_AUTH_URL}?${searchQueryParams.toString()}`
-                              : GOOGLE_AUTH_URL;
-
-                            router.push(url);
+                            const loginHint =
+                              token && prepopulateFormValues?.email
+                                ? { login_hint: prepopulateFormValues.email }
+                                : undefined;
+                            await signIn("google", { callbackUrl: "/" }, loginHint);
                           }}>
                           {t("continue_with_google")}
                         </Button>
@@ -678,22 +663,10 @@ export default function Signup({
                               has_prepopulated_username: !!prepopulateFormValues?.username,
                             });
                             setIsMicrosoftLoading(true);
-                            const baseUrl = process.env.NEXT_PUBLIC_WEBAPP_URL;
-                            const MICROSOFT_AUTH_URL = `${baseUrl}/auth/sso/microsoft`;
-                            const searchQueryParams = new URLSearchParams();
                             if (prepopulateFormValues?.username) {
-                              // If username is present we save it in query params to check for premium
-                              searchQueryParams.set("username", prepopulateFormValues.username);
                               localStorage.setItem("username", prepopulateFormValues.username);
                             }
-                            if (token && prepopulateFormValues?.email) {
-                              searchQueryParams.set("email", prepopulateFormValues.email);
-                            }
-                            const url = searchQueryParams.toString()
-                              ? `${MICROSOFT_AUTH_URL}?${searchQueryParams.toString()}`
-                              : MICROSOFT_AUTH_URL;
-
-                            router.push(url);
+                            await signIn("azure-ad", { callbackUrl: "/" });
                           }}>
                           {t("continue_with_microsoft")}
                         </Button>
