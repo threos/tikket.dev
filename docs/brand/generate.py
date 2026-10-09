@@ -127,6 +127,77 @@ def wide_mark_svg(w, h, fill=WHITE, mark=0.3):
     return svg(f'  <path fill="{fill}" d="{mark_path(w / 2, h / 2, h * mark)}"/>', w, h)
 
 
+
+# ---- Tagline as outlines (Inter, shaped with HarfBuzz) so banners need no installed font ----
+TAGLINE = "Scheduling for teams."
+INTER = "/usr/share/fonts/opentype/inter/Inter-SemiBold.otf"
+
+
+def text_path(text, size, x, y, font_path=INTER):
+    """Returns (path data, advance width) for `text` with its baseline at (x, y)."""
+    import uharfbuzz as hb
+    from fontTools.pens.svgPathPen import SVGPathPen
+    from fontTools.pens.transformPen import TransformPen
+    from fontTools.ttLib import TTFont
+
+    font = TTFont(font_path)
+    glyph_set = font.getGlyphSet()
+    glyph_order = font.getGlyphOrder()
+    upem = font["head"].unitsPerEm
+    scale = size / upem
+
+    blob = hb.Blob.from_file_path(font_path)
+    face = hb.Face(blob)
+    hb_font = hb.Font(face)
+    buf = hb.Buffer()
+    buf.add_str(text)
+    buf.guess_segment_properties()
+    hb.shape(hb_font, buf, {"kern": True, "liga": True})
+
+    pen = SVGPathPen(glyph_set, ntos=lambda v: f"{v:.2f}".rstrip("0").rstrip("."))
+    cursor = 0
+    for info, pos in zip(buf.glyph_infos, buf.glyph_positions):
+        gx = x + (cursor + pos.x_offset) * scale
+        gy = y - pos.y_offset * scale
+        glyph_set[glyph_order[info.codepoint]].draw(TransformPen(pen, (scale, 0, 0, -scale, gx, gy)))
+        cursor += pos.x_advance
+    return pen.getCommands(), cursor * scale
+
+
+def text_width(text, size, font_path=INTER):
+    return text_path(text, size, 0, 0, font_path)[1]
+
+
+def lockup_group(x, y, height, fill):
+    """The lockup scaled to `height` with its top-left corner at (x, y)."""
+    k = height / TEXT_H
+    return (
+        f'  <g transform="translate({f(x)} {f(y)}) scale({f(k)})">\n'
+        f'    <path fill="{fill}" d="{mark_path(MARK_D / 2, ASCENDER + MARK_D / 2, MARK_D / 2)}"/>\n'
+        f'    <path fill="{fill}" transform="translate({f(TEXT_X)} 0)" d="{TEXT_D}"/>\n'
+        "  </g>"
+    )
+
+
+def hero_svg(w, h, bg, fg, muted, lockup_h, tagline_size, gap, subtitle=None):
+    """Centered lockup with the tagline underneath, used for banners, OG images and the email hero."""
+    lockup_w = LOCKUP_W * lockup_h / TEXT_H
+    tag_w = text_width(TAGLINE, tagline_size)
+    sub_size = tagline_size * 0.6
+    sub_w = text_width(subtitle, sub_size) if subtitle else 0
+    block_h = lockup_h + gap + tagline_size + (gap * 0.6 + sub_size if subtitle else 0)
+    top = (h - block_h) / 2
+    body = f'  <rect width="{w}" height="{h}" fill="{bg}"/>\n'
+    body += lockup_group((w - lockup_w) / 2, top, lockup_h, fg) + "\n"
+    baseline = top + lockup_h + gap + tagline_size * 0.78
+    d, _ = text_path(TAGLINE, tagline_size, (w - tag_w) / 2, baseline)
+    body += f'  <path fill="{muted}" d="{d}"/>'
+    if subtitle:
+        d2, _ = text_path(subtitle, sub_size, (w - sub_w) / 2, baseline + gap * 0.6 + sub_size)
+        body += f'\n  <path fill="{muted}" fill-opacity="0.7" d="{d2}"/>'
+    return svg(body, w, h)
+
+
 def generate():
     S, C, R = 512, 256, 216
 
@@ -212,6 +283,25 @@ def generate():
     # -- apps/docs/public --
     write(os.path.join(DOCS_PUBLIC, "cal-docs-logo.svg"), lockup_svg(INK, docs=True))
     write(os.path.join(DOCS_PUBLIC, "cal-docs-logo-white.svg"), lockup_svg(WHITE, docs=True))
+
+
+    # -- Landing page assets (apps/web/public/tikket) --
+    TK = os.path.join(WEB_PUBLIC, "tikket")
+    write(os.path.join(TK, "wordmark.svg"), lockup_svg(INK))
+    write(os.path.join(TK, "wordmark-white.svg"), lockup_svg(WHITE))
+    write(os.path.join(TK, "icon.svg"), mark_svg(INK))
+    write(os.path.join(TK, "icon-white.svg"), mark_svg(WHITE))
+
+    # -- README banners (outlined text, no font dependency) --
+    DARK_BG, DARK_MUTED = "#141414", "#A3A3A3"
+    LIGHT_BG, LIGHT_MUTED = "#F4F4F2", "#6B6B6B"
+    write(os.path.join(BRAND, "readme-banner.svg"), hero_svg(1200, 400, LIGHT_BG, INK, LIGHT_MUTED, 120, 40, 36))
+    write(os.path.join(BRAND, "readme-banner-dark.svg"), hero_svg(1200, 400, DARK_BG, WHITE, DARK_MUTED, 120, 40, 36))
+
+    # -- Sources for social images and the email hero (rendered by render-icons.js) --
+    write(os.path.join(RASTER_SRC, "og-image.svg"), hero_svg(1200, 630, DARK_BG, WHITE, DARK_MUTED, 160, 52, 48))
+    write(os.path.join(RASTER_SRC, "video-og-image.svg"), hero_svg(1200, 630, DARK_BG, WHITE, DARK_MUTED, 160, 52, 48, subtitle="Video"))
+    write(os.path.join(RASTER_SRC, "email-hero.svg"), hero_svg(1120, 524, "#E8E8E8", INK, LIGHT_MUTED, 150, 46, 40))
 
     # -- Sources for the rasterised icons (rendered by render-icons.js) --
     write(os.path.join(RASTER_SRC, "tile.svg"), tile_svg())

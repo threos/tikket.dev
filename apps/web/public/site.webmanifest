@@ -1,7 +1,7 @@
 {
     "name": "Tikket",
     "short_name": "Tikket",
-    "description": "Scheduling infrastructure for absolutely everyone.",
+    "description": "Scheduling for teams. Round-robin, weighted routing and collective events.",
     "icons": [
         {
             "src": "/api/logo?type=android-chrome-192",

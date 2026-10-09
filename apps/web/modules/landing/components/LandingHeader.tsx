@@ -13,7 +13,7 @@ export function LandingHeader() {
         <Link
           href="/"
           className="focus-visible:ring-emphasis -m-1 rounded-md p-1 focus-visible:outline-none focus-visible:ring-2">
-          <Wordmark className="h-6" />
+          <Wordmark className="h-7" />
         </Link>
         <nav aria-label={t("landing_nav_label")} className="flex items-center gap-2">
           <Button href={LANDING_SIGN_IN_PATH} color="minimal">

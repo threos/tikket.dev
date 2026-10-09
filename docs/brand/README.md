@@ -18,7 +18,8 @@ Mark first, then the "tikket" wordmark. The mark's diameter equals the ascender 
 | `tikket-mark.svg` / `tikket-mark-white.svg` | Standalone mark |
 | `tikket-lockup.svg` / `tikket-lockup-white.svg` | Mark + wordmark, light / dark backgrounds |
 | `variants/` | Twelve explorations (rounded, outline, badge, app tile, colour, compact, ring, six slices) |
-| `raster-src/` | SVG sources used to rasterise favicons, touch icons, Windows tiles and the email logo |
+| `readme-banner.svg` / `readme-banner-dark.svg` | Lockup with the tagline as outlines, for the README |
+| `raster-src/` | SVG sources used to rasterise favicons, touch icons, Windows tiles, social images and the email images |
 
 ## Where the assets live in the app
 
@@ -30,12 +31,15 @@ File names in `apps/web/public` and `apps/docs/public` are kept from the Cal.diy
 - `favicon*.png`, `favicon.ico`, `apple-touch-icon.png`, `android-chrome-*.png`: white mark on a dark rounded tile
 - `mstile-*.png`: white mark on transparent, shown on the `TileColor` from `browserconfig.xml`
 - `emails/logo.png`: lockup at 2x for the 70×19 email header
+- `og-image.png`, `video-og-image.png`: social preview images, lockup and tagline on a dark background
+- `emails/calendar-email-hero.png`: lockup and tagline on a light background for the team invite emails
+- `tikket/wordmark.svg`, `tikket/wordmark-white.svg`, `tikket/icon.svg`, `tikket/icon-white.svg`: lockup and mark used by the landing page
 - `apps/docs/public/cal-docs-logo*.svg`: lockup followed by "Docs"
 
 ## Regenerating
 
 ```bash
-python3 docs/brand/generate.py        # all SVGs (brand folder + app public folders)
-node docs/brand/render-icons.js       # PNGs via Playwright's Chromium
+python3 docs/brand/generate.py        # all SVGs (brand folder + app public folders); needs fonttools and uharfbuzz
+node docs/brand/render-icons.js       # PNGs via Playwright's Chromium (needs the playwright package, or set PLAYWRIGHT_MODULE)
 python3 docs/brand/generate.py --ico  # favicon.ico from the 16/32/48 px renders
 ```

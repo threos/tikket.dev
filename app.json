@@ -1,8 +1,8 @@
 {
   "name": "Tikket",
-  "description": "Open Source Scheduling",
-  "repository": "https://github.com/calcom/cal.diy",
-  "logo": "https://cal.com/android-chrome-512x512.png",
+  "description": "Scheduling for teams. Open source.",
+  "repository": "https://github.com/threos/tikket.dev",
+  "logo": "https://raw.githubusercontent.com/threos/tikket.dev/main/apps/web/public/android-chrome-512x512.png",
   "keywords": ["react", "typescript", "node", "nextjs", "prisma", "postgres", "trpc"],
   "addons": [
     {

@@ -13,7 +13,7 @@ export function LandingFooter() {
     <footer className="border-subtle border-t">
       <div className="mx-auto flex max-w-[1100px] flex-col items-center justify-between gap-4 px-4 py-8 sm:flex-row sm:px-6">
         <div className="flex items-center gap-3">
-          <Wordmark className="h-4" />
+          <Wordmark className="h-5" />
           <p className="text-subtle text-sm">
             {t("landing_footer_copyright", { year: new Date().getFullYear() })}
           </p>

@@ -37,6 +37,9 @@ const jobs = [
   ["mstile-square.svg", path.join(WEB, "mstile-310x310.png"), 558, 558],
   ["mstile-wide.svg", path.join(WEB, "mstile-310x150.png"), 558, 270],
   ["email-logo.svg", path.join(WEB, "emails", "logo.png"), 141, 38],
+  ["email-hero.svg", path.join(WEB, "emails", "calendar-email-hero.png"), 1120, 524],
+  ["og-image.svg", path.join(WEB, "og-image.png"), 1200, 630],
+  ["video-og-image.svg", path.join(WEB, "video-og-image.png"), 1200, 630],
 ];
 
 (async () => {
