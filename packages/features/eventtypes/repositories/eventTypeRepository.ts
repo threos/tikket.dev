@@ -1140,6 +1140,30 @@ export class EventTypeRepository implements IEventTypesRepository {
     });
   }
 
+  async findIdByTeamSlugAndSlug({
+    teamSlug,
+    slug,
+    parentTeamSlug,
+  }: {
+    teamSlug: string;
+    slug: string;
+    parentTeamSlug: string | null;
+  }) {
+    // Team slugs are only unique within the same parent, so without an org context we must restrict
+    // the lookup to top-level teams, otherwise a sub-team's event could be served for a public team URL.
+    return this.prismaClient.eventType.findFirst({
+      where: {
+        slug,
+        team: parentTeamSlug
+          ? { slug: teamSlug, parent: { slug: parentTeamSlug } }
+          : { slug: teamSlug, parentId: null },
+      },
+      select: {
+        id: true,
+      },
+    });
+  }
+
   async findByIdIncludeHostsAndTeam({ id }: { id: number }) {
     const eventType = await this.prismaClient.eventType.findUnique({
       where: {

@@ -355,6 +355,7 @@ export class AvailableSlotsService {
   private async getEventTypeId({
     slug,
     eventTypeSlug,
+    isTeamEvent,
     organizationDetails,
   }: {
     slug?: string;
@@ -364,16 +365,31 @@ export class AvailableSlotsService {
   }) {
     if (!eventTypeSlug || !slug) return null;
 
-    const userId = await this.getUserIdFromUsername(
-      slug,
-      organizationDetails ?? { currentOrgDomain: null, isValidOrgDomain: false }
-    );
+    const orgDetails = organizationDetails ?? { currentOrgDomain: null, isValidOrgDomain: false };
     const eventTypeRepo = this.dependencies.eventTypeRepo;
+
+    if (isTeamEvent) {
+      const teamEventType = await eventTypeRepo.findIdByTeamSlugAndSlug({
+        teamSlug: slug,
+        slug: eventTypeSlug,
+        parentTeamSlug: orgDetails.isValidOrgDomain ? orgDetails.currentOrgDomain : null,
+      });
+      if (!teamEventType) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+      return teamEventType.id;
+    }
+
+    const userId = await this.getUserIdFromUsername(slug, orgDetails);
+    // Without a resolved owner, a slug-only lookup could return another user's or team's event type.
+    if (!userId) {
+      throw new TRPCError({ code: "NOT_FOUND" });
+    }
     const eventType = await eventTypeRepo.findFirstEventTypeId({ slug: eventTypeSlug, userId });
     if (!eventType) {
       throw new TRPCError({ code: "NOT_FOUND" });
     }
-    return eventType?.id;
+    return eventType.id;
   }
 
   private async _getBusyTimesFromLimitsForUsers(
@@ -569,7 +585,10 @@ export class AvailableSlotsService {
 
             const selectedDuration = (duration || eventType.length) ?? 0;
 
-            const { title: durationTitle, source: durationSource } = LimitSources.eventDurationLimit({ limit, unit });
+            const { title: durationTitle, source: durationSource } = LimitSources.eventDurationLimit({
+              limit,
+              unit,
+            });
 
             if (selectedDuration > limit) {
               limitManager.addBusyTime({
