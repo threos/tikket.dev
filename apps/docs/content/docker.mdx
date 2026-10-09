@@ -1,112 +1,130 @@
 # Docker
 
-### Introduction
+## Introduction
 
-This image can be found on DockerHub at [https://hub.docker.com/r/calcom/cal.diy](https://hub.docker.com/r/calcom/cal.diy). Note for ARM Users: Use the `-arm` suffix for pulling images. Example: `docker pull calcom/cal.diy:v5.6.19-arm`.
+Tikket does not publish a Docker image. You build the image from this repository with Docker Compose. The `docker-compose.yml` file in the root of the repository references the upstream Cal.diy image by default. When you build the `calcom` service, Docker tags your build with that image name and uses your build instead of the upstream image.
 
-### Contributing
+## Docker files
 
-The Docker configuration for Cal.diy is officially maintained in the main Cal.diy repository. The Dockerfile and docker-compose.yml are located in the root of the calcom/cal.diy repository. If you want to contribute to the Docker setup, please open an issue or pull request in the main Cal.diy repository.
+The `Dockerfile` and `docker-compose.yml` in the root of the repository define the image and the stack. Read them if you want to customize your own image. To change the Docker configuration for everyone, open an issue or a pull request at https://github.com/threos/tikket.dev.
 
-### Requirements
+## Requirements
 
-Make sure you have `docker` & `docker compose` installed on the server / system. Note: `docker compose` without the hyphen is now the primary method of using docker-compose, per the Docker documentation.
+Make sure that `docker` and `docker compose` are installed on the server. Use `docker compose` without the hyphen. The Docker documentation names it as the primary form of docker-compose.
 
-### Getting Started
+## Build the image
 
-Clone the Cal.diy repository
+1. Clone the repository:
 
-```bash
-git clone https://github.com/calcom/cal.diy.git
-```
+   ```bash
+   git clone https://github.com/threos/tikket.dev.git
+   ```
 
-Change into the directory
+2. Go into the new directory:
 
-```bash
-cd cal.diy
-```
+   ```bash
+   cd tikket.dev
+   ```
 
-Prepare your configuration: Rename .env.example to .env and then update .env
+3. Create the configuration file. Copy `.env.example` to `.env` and then edit `.env`. Most values can stay as they are. The Configuration section below lists the variables that matter.
 
-```bash
-cp .env.example .env
-```
+   ```bash
+   cp .env.example .env
+   ```
 
-(optional) Pre-Pull the images by running the following command
+4. Make sure that a database is available during the build. The build needs one. If your database runs elsewhere, set `DATABASE_URL` in `.env` and skip the next command. If not, start a local database with Docker Compose:
 
-```bash
-docker compose pull
-```
+   ```bash
+   docker compose up -d database
+   ```
 
-Start Cal.diy via docker compose (Most basic users, and for First Run) To run the complete stack, which includes a local Postgres database, Cal.diy web app, and Prisma Studio:
+5. Build the image. The `DOCKER_BUILDKIT=0` setting lets the build use a network bridge:
+
+   ```bash
+   DOCKER_BUILDKIT=0 docker compose build calcom
+   ```
+
+## Start Tikket
+
+Start the services that fit your setup. The complete stack includes a local Postgres database, the Tikket web app and Prisma Studio. Prisma Studio is a web UI that shows the content of the database.
+
+To run the complete stack:
 
 ```bash
 docker compose up -d
 ```
 
-To run Cal.diy web app and Prisma Studio against a remote database, ensure that DATABASE_URL is configured for an available database and run:
+To run the Tikket web app and Prisma Studio against a remote database, set `DATABASE_URL` to that database in `.env` and run:
 
 ```bash
 docker compose up -d calcom studio
 ```
 
-To run only the Cal.diy web app, ensure that DATABASE_URL is configured for an available database and run:
+To run only the Tikket web app against a remote database, set `DATABASE_URL` in `.env` and run:
 
 ```bash
 docker compose up -d calcom
 ```
 
-1. Most configurations can be left as-is, but for configuration options see Important Run-time variables below. Update the appropriate values in your .env file, then proceed.
-2. Open a browser to http://localhost:3000, or your defined NEXT_PUBLIC_WEBAPP_URL. The first time you run Cal.diy, a setup wizard will initialize. Define your first user, and you're ready to go!
+Then open http://localhost:3000, or the URL that you set as `NEXT_PUBLIC_WEBAPP_URL`, in a browser. On the first run, a setup wizard opens. Create your first user in the wizard.
 
-### Update Calcom Instance
+## Update the instance
 
-Stop the Cal.diy stack
+1. Stop the stack:
 
-```bash
-docker compose down
-```
+   ```bash
+   docker compose down
+   ```
 
-Pull the latest changes
+2. Pull the latest code:
 
-```bash
-docker compose pull
-```
+   ```bash
+   git pull
+   ```
 
-Re-start the Cal.diy stack
+3. Build the image again:
 
-```bash
-docker compose up -d
-```
+   ```bash
+   DOCKER_BUILDKIT=0 docker compose build calcom
+   ```
 
-1. Update environment variables as necessary.
+4. If the new version adds environment variables, add them to `.env`.
 
-### Configuration
+5. Start the stack again:
 
-#### Build-time variables
+   ```bash
+   docker compose up -d
+   ```
 
-These variables must be provided at the time of the docker build, and can be provided by updating the .env file. Changing these is not required for evaluation, but may be required for running in production. Currently, if you require changes to these variables, you must follow the instructions to build and publish your own image.
+## Configuration
+
+### Build-time variables
+
+Docker reads these variables from the `.env` file when it builds the image. You do not have to change them for a test setup. For production, you can need other values. If you change one of these variables, build the image again:
 
 - `NEXT_PUBLIC_TELEMETRY_KEY`
 - `NEXT_PUBLIC_LICENSE_CONSENT`
 - `NEXT_PUBLIC_WEBAPP_URL`
 
-#### Important Run-time variables
+### Run-time variables
 
-- `NEXTAUTH_SECRET`
-
-## Advanced Users - Building and Configuring
-
-For more detailed instructions on how to build and configure your own Docker image, refer to the Dockerfile and docker-compose.yml in the root of the Cal.diy repository.
+The important run-time variable is `NEXTAUTH_SECRET`. Set it in `.env` before you start the stack. The [Installation](/installation) page shows how to generate it.
 
 ## Troubleshooting
 
-- **Failed to commit changes: Invalid 'prisma.user.create()'**: Certain versions may have trouble creating a user if the field `metadata` is empty. Using an empty json object `{}` as the field value should resolve this issue. Also, the `id` field will autoincrement, so you may also try leaving the value of `id` as empty.
-- **SSL edge termination**: If running behind a load balancer which handles SSL certificates, you will need to add the environmental variable `NODE_TLS_REJECT_UNAUTHORIZED=0` to prevent requests from being rejected. Only do this if you know what you are doing and trust the services/load-balancers directing traffic to your service.
+The [Troubleshooting](/troubleshooting) page covers more faults, including the API v2 service and reverse proxies.
+
+### Failed to commit changes: Invalid `prisma.user.create()`
+
+Some versions cannot create a user when the `metadata` field is empty. Set the field to an empty JSON object, `{}`. The `id` field auto-increments, so you can also leave `id` empty.
+
+### SSL edge termination
+
+If a load balancer in front of Tikket handles the SSL certificates, add the environment variable `NODE_TLS_REJECT_UNAUTHORIZED=0`. Without it, Tikket rejects the requests. Only do this if you trust every service and load balancer that sends traffic to Tikket. The variable turns off TLS certificate verification.
 
 ### CLIENT_FETCH_ERROR
 
-If you experience this error, it may be the way the default Auth callback in the server is using the WEBAPP_URL as a base url. The container does not necessarily have access to the same DNS as your local machine, and therefore needs to be configured to resolve to itself. You may be able to correct this by configuring `NEXTAUTH_URL=http://localhost:3000/api/auth`, to help the backend loop back to itself.
+The default Auth callback on the server uses `WEBAPP_URL` as its base URL. The container does not always have the same DNS as your local machine, so it cannot resolve that URL. To correct the fault, configure `NEXTAUTH_URL=http://localhost:3000/api/auth`. The backend then connects back to itself.
 
 ```
 docker-calcom-1  | @calcom/web:start: [next-auth][error][CLIENT_FETCH_ERROR]

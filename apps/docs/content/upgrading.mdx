@@ -1,50 +1,50 @@
 # Upgrading
 
-Pull the current version:
+1. Pull the current version:
 
-```bash
-git pull
-```
+   ```bash
+   git pull
+   ```
 
-Check if dependencies got added/updated/removed
+2. Install the dependencies again. This installs the packages that the new version added or changed, and removes the packages that it dropped.
 
-```bash
-yarn
-```
+   ```bash
+   yarn
+   ```
 
-Apply database migrations by running **one of** the following commands:
+3. Apply the database migrations. Run one of the two commands.
 
-In a development environment, run:
+   In a development environment, run:
 
-```bash
-yarn workspace @calcom/prisma db-migrate
-```
+   ```bash
+   yarn workspace @calcom/prisma db-migrate
+   ```
 
-(this can clear your development database in some cases)
+   This command can clear your development database in some cases.
 
-In a production environment, run:
+   In a production environment, run:
 
-```bash
-yarn workspace @calcom/prisma db-deploy
-```
+   ```bash
+   yarn workspace @calcom/prisma db-deploy
+   ```
 
-Check for `.env` variables changes
+4. Look for changes to the `.env` variables:
 
-```bash
-yarn predev
-```
+   ```bash
+   yarn predev
+   ```
 
-Start the server. In a development environment, just do:
+5. Start the server. In a development environment, run:
 
-```bash
-yarn dev
-```
+   ```bash
+   yarn dev
+   ```
 
-For a production build, run for example:
+   For a production build, run:
 
-```bash
-yarn build
-yarn start
-```
+   ```bash
+   yarn build
+   yarn start
+   ```
 
-Enjoy the new version.
+Tikket then runs the new version.

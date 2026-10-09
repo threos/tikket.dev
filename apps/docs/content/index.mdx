@@ -1,34 +1,36 @@
 import { Callout } from "nextra/components";
 
-# Cal.diy Self-Hosting Documentation
+# Tikket docs
 
-<Callout type="warning">
-  **Use at your own risk.** Cal.diy is the open source community edition of
-  Cal.com and it is intended for users who want to self-host their own Cal.diy
-  instance. **It is strictly recommended for personal, non-production use.**
-  Please review all installation and configuration steps carefully. Self-hosting
-  requires advanced knowledge of server administration, database management, and
-  securing sensitive data. Proceed only if you are comfortable with these
-  responsibilities.
+## What Tikket is
+
+Tikket is open-source scheduling for teams, licensed under MIT. It adds team scheduling to the community edition of Cal.com:
+
+- Team management and assignment
+- Shared team event types
+- Roles and invites
+- Round-robin with weights and priorities
+- Collective events
+
+You can run Tikket on your own server from the source repository at https://github.com/threos/tikket.dev. You can also use the hosted version at https://tikket.dev. The features of the hosted version (billing and plan limits) are optional, and a self-hosted Tikket runs without them.
+
+<Callout type="info">
+  Tikket is built on Cal.diy and Cal.com. Cal.diy and Cal are registered
+  trademarks of Cal.com, Inc.
 </Callout>
 
-<Callout type="important">
-  **For any commercial and enterprise-ready scheduling infrastructure, use
-  Cal.com**, not Cal.diy; hosted by us or get invited to on-prem enterprise
-  access here: https://cal.com/sales
-</Callout>
+## Getting started
 
-## Getting Started
-
-- [Installation](/installation) - Learn how to install and set up Cal.diy
-- [Database Migrations](/database-migrations) - Manage database schema changes
-- [Upgrading](/upgrading) - Keep your instance up to date
-- [Docker](/docker) - Deploy with Docker
-- [Apps](/apps/google) - Set up third-party integrations
+- [Installation](/installation): install Tikket from source and build it for production
+- [Database Migrations](/database-migrations): apply and create changes to the database schema
+- [Upgrading](/upgrading): update your instance to a new version
+- [Docker](/docker): build the Docker image and run Tikket with Docker Compose
+- [Apps](/apps/google): configure third-party integrations
+- [Troubleshooting](/troubleshooting): correct common self-hosting faults
 
 ## Deployments
 
-Deploy Cal.diy on your preferred platform:
+Deploy Tikket on the platform of your choice:
 
 - [AWS](/deployments/aws)
 - [Azure](/deployments/azure)
@@ -39,86 +41,6 @@ Deploy Cal.diy on your preferred platform:
 - [Render](/deployments/render)
 - [Vercel](/deployments/vercel)
 
-## Differences between Cal.diy and Cal.com
+## Tikket, Cal.diy and Cal.com
 
-Cal.com is the commercial application running on app.cal.com. It's free to sign up and battle-tested with millions
-of monthly bookings by large organizations. Cal.diy is the new open source community edition which was spun out of Cal.com.
-Like any diy project, Cal.com, Inc. does not guarantee security and safety of the open source project. Cal.diy is
-community maintained and strictly recommended for personal, non-production use. Please use at your own risk.
-
-For any commercial usage, please visit Cal.com or request enterprise access to our on-prem hosting: https://cal.com/sales.
-
-Find all differences in features below (summarized):
-
-| Feature                                                        | Cal.diy | Cal.com |
-|--------------------------------------------------------------- |:-------:|:-------:|
-| **SCHEDULING & BOOKINGS**                                      |         |         |
-| Event Types                                                    |   ✅    |   ✅    |
-| Recurring Event Types                                          |   ✅    |   ✅    |
-| Seated Events                                                  |   ✅    |   ✅    |
-| Paid Events (Stripe/PayPal)                                    |   ✅    |   ✅    |
-| Private Links (Hashed URLs)                                    |   ✅    |   ✅    |
-| Booking Management                                             |   ✅    |   ✅    |
-| Teams                                                          |   ❌    |   ✅    |
-| Team Event Types (Round-Robin)                                 |   ❌    |   ✅    |
-| Team Event Types (Collective)                                  |   ❌    |   ✅    |
-| Managed Event Types                                            |   ❌    |   ✅    |
-| Instant Meeting                                                |   ❌    |   ✅    |
-| Organizations                                                  |   ❌    |   ✅    |
-| **AVAILABILITY**                                               |         |         |
-| Availability Schedules                                         |   ✅    |   ✅    |
-| Date Overrides                                                 |   ✅    |   ✅    |
-| Buffer Times                                                   |   ✅    |   ✅    |
-| Minimum Notice / Booking Limits                                |   ✅    |   ✅    |
-| Travel Schedules                                               |   ✅    |   ✅    |
-| Out-of-Office (OOO)                                            |   ✅    |   ✅    |
-| **CALENDAR INTEGRATIONS**                                      |         |         |
-| Google Calendar                                                |   ✅    |   ✅    |
-| Outlook / Office 365 Calendar                                  |   ✅    |   ✅    |
-| Apple Calendar                                                 |   ✅    |   ✅    |
-| CalDAV                                                         |   ✅    |   ✅    |
-| Lark Calendar                                                  |   ✅    |   ✅    |
-| Feishu Calendar                                                |   ✅    |   ✅    |
-| Zoho Calendar                                                  |   ✅    |   ✅    |
-| Exchange Calendar                                              |   ✅    |   ✅    |
-| ICS Feed Calendar                                              |   ✅    |   ✅    |
-| **VIDEO & CONFERENCING**                                       |         |         |
-| Cal Video (Daily.co)                                           |   ✅    |   ✅    |
-| Zoom                                                           |   ✅    |   ✅    |
-| Google Meet                                                    |   ✅    |   ✅    |
-| Microsoft Teams                                                |   ✅    |   ✅    |
-| Webex                                                          |   ✅    |   ✅    |
-| Jitsi                                                          |   ✅    |   ✅    |
-| Other conferencing (Whereby, Huddle01, etc.)                   |   ✅    |   ✅    |
-| Cal.com Video Recordings                                       |   ❌    |   ✅    |
-| **AUTHENTICATION**                                             |         |         |
-| Email / Password Login                                         |   ✅    |   ✅    |
-| Google OAuth                                                   |   ✅    |   ✅    |
-| Azure AD / Microsoft OAuth                                     |   ✅    |   ✅    |
-| SAML SSO                                                       |   ❌    |   ✅    |
-| SCIM Directory Sync                                            |   ❌    |   ✅    |
-| Impersonation                                                  |   ❌    |   ✅    |
-| **AUTOMATION & INTEGRATIONS**                                  |         |         |
-| Webhooks                                                       |   ✅    |   ✅    |
-| Zapier                                                         |   ✅    |   ✅    |
-| n8n / Make / Pipedream                                         |   ✅    |   ✅    |
-| CRM (HubSpot / Salesforce / Close, etc.)                       |   ✅    |   ✅    |
-| Messaging (Discord, Telegram, WhatsApp, etc.)                  |   ✅    |   ✅    |
-| AI Agents (Retell AI, ElevenLabs, Synthflow, etc.)             |   ✅    |   ✅    |
-| Analytics (GA4, GTM, PostHog, Fathom, etc.)                    |   ✅    |   ✅    |
-| Workflows (Automations)                                        |   ❌    |   ✅    |
-| Routing Forms                                                  |   ❌    |   ✅    |
-| **EMBED & API**                                                |         |         |
-| Embed (Inline, Popup, Floating Button)                         |   ✅    |   ✅    |
-| API v2 (REST)                                                  |   ✅    |   ✅    |
-| API Keys                                                       |   ✅    |   ✅    |
-| Platform / OAuth Clients                                       |   ✅    |   ✅    |
-| API v1 (Legacy)                                                |   ❌    |   ✅    |
-| **ANALYTICS**                                                  |         |         |
-| Insights Dashboard                                             |   ❌    |   ✅    |
-| **ADVANCED / ENTERPRISE**                                      |         |         |
-| Attributes & Segments                                          |   ❌    |   ✅    |
-| Delegation                                                     |   ❌    |   ✅    |
-| Workspace Platform                                             |   ❌    |   ✅    |
-| Admin Panel                                                    |   ❌    |   ✅    |
-|            |  [Install](/installation)  |[Sign up](https://cal.com/signup)|
+Cal.com is the commercial scheduling product of Cal.com, Inc. Cal.diy is the MIT community edition of Cal.com, with the enterprise features removed: teams, organizations, insights, workflows, routing forms and SSO. Tikket is a fork of Cal.diy that adds team scheduling back under the MIT license. Routing forms, workflows, organizations, insights, SSO and SAML are not in Tikket. Package names such as `@calcom/*` and the `calendso` database name come from the upstream projects, and Tikket keeps them.
