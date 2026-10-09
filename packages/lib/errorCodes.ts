@@ -3,6 +3,7 @@ export enum ErrorCode {
   Unauthorized = "unauthorized_error",
   Forbidden = "forbidden_error",
   NotFound = "not_found_error",
+  Conflict = "conflict_error",
   BadRequest = "bad_request_error",
   InternalServerError = "internal_server_error",
 
