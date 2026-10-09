@@ -605,55 +605,61 @@ export const getOptions = ({
           })) &&
           GOOGLE_CALENDAR_SCOPES.every((scope) => grantedScopes.includes(scope))
         ) {
-          // Installing Google Calendar by default
-          const credentialkey = {
-            access_token: account.access_token,
-            refresh_token: account.refresh_token,
-            id_token: account.id_token,
-            token_type: account.token_type,
-            expires_at: account.expires_at,
-          };
-          const gcalCredentialData = buildCredentialCreateData({
-            userId: Number(user.id),
-            key: credentialkey,
-            appId: "google-calendar",
-            type: "google_calendar",
-          });
-          const gcalCredential = await CredentialRepository.create(gcalCredentialData);
-          const gCalService = createGoogleCalendarServiceWithGoogleType({
-            ...gcalCredential,
-            user: null,
-            delegatedTo: null,
-          });
-
-          if (
-            !(await CredentialRepository.findFirstByUserIdAndType({
+          // Auto-installing the calendar is a convenience: if it fails (e.g. the google-calendar app
+          // isn't enabled on this instance, or the Calendar API is off), sign-in must still succeed.
+          try {
+            // Installing Google Calendar by default
+            const credentialkey = {
+              access_token: account.access_token,
+              refresh_token: account.refresh_token,
+              id_token: account.id_token,
+              token_type: account.token_type,
+              expires_at: account.expires_at,
+            };
+            const gcalCredentialData = buildCredentialCreateData({
               userId: Number(user.id),
-              type: "google_video",
-            }))
-          ) {
-            const googleMeetCredentialData = buildCredentialCreateData({
-              type: "google_video",
-              key: {},
-              userId: Number(user.id),
-              appId: "google-meet",
+              key: credentialkey,
+              appId: "google-calendar",
+              type: "google_calendar",
             });
-            await CredentialRepository.create(googleMeetCredentialData);
-          }
-
-          const oAuth2Client = new OAuth2Client(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET);
-          oAuth2Client.setCredentials(credentialkey);
-          const calendar = new calendar_v3.Calendar({
-            auth: oAuth2Client,
-          });
-          const primaryCal = await gCalService.getPrimaryCalendar(calendar);
-          if (primaryCal?.id) {
-            await gCalService.createSelectedCalendar({
-              externalId: primaryCal.id,
-              userId: Number(user.id),
+            const gcalCredential = await CredentialRepository.create(gcalCredentialData);
+            const gCalService = createGoogleCalendarServiceWithGoogleType({
+              ...gcalCredential,
+              user: null,
+              delegatedTo: null,
             });
+
+            if (
+              !(await CredentialRepository.findFirstByUserIdAndType({
+                userId: Number(user.id),
+                type: "google_video",
+              }))
+            ) {
+              const googleMeetCredentialData = buildCredentialCreateData({
+                type: "google_video",
+                key: {},
+                userId: Number(user.id),
+                appId: "google-meet",
+              });
+              await CredentialRepository.create(googleMeetCredentialData);
+            }
+
+            const oAuth2Client = new OAuth2Client(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET);
+            oAuth2Client.setCredentials(credentialkey);
+            const calendar = new calendar_v3.Calendar({
+              auth: oAuth2Client,
+            });
+            const primaryCal = await gCalService.getPrimaryCalendar(calendar);
+            if (primaryCal?.id) {
+              await gCalService.createSelectedCalendar({
+                externalId: primaryCal.id,
+                userId: Number(user.id),
+              });
+            }
+            await updateProfilePhotoGoogle(oAuth2Client, Number(user.id));
+          } catch (error) {
+            log.error("Failed to auto-install Google Calendar on sign-in", safeStringify(error));
           }
-          await updateProfilePhotoGoogle(oAuth2Client, Number(user.id));
         }
 
         // Installing Outlook Calendar by default for Microsoft/Azure AD sign-in
