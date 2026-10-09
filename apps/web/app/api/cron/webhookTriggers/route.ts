@@ -1,14 +1,12 @@
+import { handleWebhookScheduledTriggers } from "@calcom/features/webhooks/lib/handleWebhookScheduledTriggers";
+import { isAuthorizedCronRequest } from "@calcom/lib/server/isAuthorizedCronRequest";
+import prisma from "@calcom/prisma";
 import { defaultResponderForAppDir } from "app/api/defaultResponderForAppDir";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-import { handleWebhookScheduledTriggers } from "@calcom/features/webhooks/lib/handleWebhookScheduledTriggers";
-import prisma from "@calcom/prisma";
-
-async function postHandler(req: NextRequest) {
-  const apiKey = req.headers.get("authorization") || req.nextUrl.searchParams.get("apiKey");
-
-  if (process.env.CRON_API_KEY !== apiKey) {
+async function handler(req: NextRequest) {
+  if (!isAuthorizedCronRequest(req)) {
     return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
   }
 
@@ -17,4 +15,5 @@ async function postHandler(req: NextRequest) {
   return NextResponse.json({ ok: true });
 }
 
-export const POST = defaultResponderForAppDir(postHandler);
+export const GET = defaultResponderForAppDir(handler);
+export const POST = defaultResponderForAppDir(handler);

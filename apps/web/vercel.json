@@ -9,10 +9,6 @@
       "schedule": "0 3 * * *"
     },
     {
-      "path": "/api/cron/queuedFormResponseCleanup",
-      "schedule": "0 */12 * * *"
-    },
-    {
       "path": "/api/tasks/cron",
       "schedule": "* * * * *"
     },
@@ -21,12 +17,24 @@
       "schedule": "0 0 * * *"
     },
     {
-      "path": "/api/cron/credentials",
+      "path": "/api/cron/selected-calendars",
       "schedule": "*/5 * * * *"
     },
     {
-      "path": "/api/cron/selected-calendars",
-      "schedule": "*/5 * * * *"
+      "path": "/api/cron/bookingReminder",
+      "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/cron/webhookTriggers",
+      "schedule": "* * * * *"
+    },
+    {
+      "path": "/api/cron/changeTimeZone",
+      "schedule": "0 * * * *"
+    },
+    {
+      "path": "/api/cron/syncAppMeta",
+      "schedule": "0 0 1 * *"
     }
   ],
   "functions": {}
