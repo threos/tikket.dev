@@ -22,7 +22,7 @@ export const DailyVideoDownloadRecordingEmail = (
         title: props.title,
         date: props.date,
       })}>
-      <div style={{ width: "89px", marginBottom: "35px" }}>
+      <div style={{ width: "70px", marginBottom: "35px" }}>
         <a href={WEBAPP_URL} target="_blank" rel="noreferrer">
           <img
             height="19"
@@ -36,7 +36,7 @@ export const DailyVideoDownloadRecordingEmail = (
               width: "100%",
               fontSize: "13px",
             }}
-            width="89"
+            width="70"
             alt=""
           />
         </a>

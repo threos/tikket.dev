@@ -1,0 +1,239 @@
+#!/usr/bin/env python3
+"""Generates every Tikket logo asset from one geometric construction.
+
+Run from the repository root:
+    python3 docs/brand/generate.py            # writes SVGs into docs/brand and the app public folders
+    node docs/brand/render-icons.js           # rasterises favicons / touch icons / email logo
+    python3 docs/brand/generate.py --ico      # bundles favicon-16/32/48 PNGs into favicon.ico
+"""
+import math
+import os
+import sys
+
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+BRAND = os.path.join(ROOT, "docs", "brand")
+WEB_PUBLIC = os.path.join(ROOT, "apps", "web", "public")
+DOCS_PUBLIC = os.path.join(ROOT, "apps", "docs", "public")
+RASTER_SRC = os.path.join(BRAND, "raster-src")
+
+# ---- Construction --------------------------------------------------------
+# Three 30 degree pie slices meet at the centre (pointing up-right, up-left, down).
+# Three right-angled triangles point inward from the top, lower-left and lower-right;
+# their sides are parallel to the neighbouring slice edges, so every gap is identical.
+# Every outer edge is trimmed by one shared circle.
+HALF = 15        # slice half-angle in degrees
+GAP = 0.26       # white gap between pieces, as a fraction of the outer radius
+LONG_ANGLES = (30, 150, 270)
+SHORT_ANGLES = (90, 210, 330)
+
+INK = "#292929"  # matches the existing wordmark fill
+WHITE = "#FFFFFF"
+
+
+def f(v):
+    s = f"{v:.3f}".rstrip("0").rstrip(".")
+    return "0" if s == "-0" else s
+
+
+def pt(cx, cy, r, deg):
+    a = math.radians(deg)
+    return cx + r * math.cos(a), cy - r * math.sin(a)
+
+
+def long_slice(cx, cy, R, a, half=HALF):
+    x1, y1 = pt(cx, cy, R, a - half)
+    x2, y2 = pt(cx, cy, R, a + half)
+    return f"M{f(cx)} {f(cy)}L{f(x1)} {f(y1)}A{f(R)} {f(R)} 0 0 0 {f(x2)} {f(y2)}Z"
+
+
+def short_tri(cx, cy, R, a, gap=GAP, half=HALF):
+    side = 60 - half
+    d = gap / math.sin(math.radians(side)) * R
+    ax, ay = pt(cx, cy, d, a)
+    corners = []
+    for s in (side, -side):
+        ux, uy = math.cos(math.radians(a + s)), -math.sin(math.radians(a + s))
+        px, py = ax - cx, ay - cy
+        b = 2 * (px * ux + py * uy)
+        c = px * px + py * py - R * R
+        t = (-b + math.sqrt(b * b - 4 * c)) / 2
+        corners.append((ax + t * ux, ay + t * uy))
+    (x1, y1), (x2, y2) = corners
+    return f"M{f(ax)} {f(ay)}L{f(x1)} {f(y1)}A{f(R)} {f(R)} 0 0 1 {f(x2)} {f(y2)}Z"
+
+
+def mark_path(cx, cy, R, gap=GAP, half=HALF):
+    return "".join(long_slice(cx, cy, R, a, half) for a in LONG_ANGLES) + "".join(
+        short_tri(cx, cy, R, a, gap, half) for a in SHORT_ANGLES
+    )
+
+
+def svg(body, w, h):
+    return (
+        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {f(w)} {f(h)}" '
+        f'width="{f(w)}" height="{f(h)}" fill="none">\n{body}\n</svg>\n'
+    )
+
+
+def write(path, content):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w") as fh:
+        fh.write(content)
+
+
+# ---- Wordmark glyphs (outlined "tikket" and "Docs", inherited from the previous wordmark files) ----
+TEXT_D = "M2.162 18.848V11.623H0V8.218H2.162V5.109L6.159 4.694V8.218H9.416V11.623H6.159V18.641Q6.159 20.062 7.402 20.062H9.061V23.615H6.869Q4.53 23.615 3.346 22.46Q2.162 21.306 2.162 18.848ZM10.452 8.218H14.45V23.615H10.452ZM12.436 2.237Q13.472 2.237 14.153 2.918Q14.834 3.599 14.834 4.576Q14.834 5.583 14.153 6.264Q13.472 6.945 12.436 6.945Q11.429 6.945 10.734 6.249Q10.038 5.553 10.038 4.576Q10.038 3.599 10.734 2.918Q11.429 2.237 12.436 2.237ZM20.52 16.301V23.615H16.522V2H20.52V14.436L26.293 8.218H31.978L24.724 15.384L32.008 23.615H26.708ZM36.746 16.301V23.615H32.748V2H36.746V14.436L42.52 8.218H48.205L40.95 15.384L48.234 23.615H42.934ZM46.458 15.946Q46.458 13.755 47.494 11.89Q48.53 10.024 50.351 8.929Q52.172 7.833 54.423 7.833Q56.673 7.833 58.464 8.929Q60.256 10.024 61.248 11.875Q62.24 13.725 62.24 15.946Q62.24 16.686 62.121 17.367H50.603Q50.958 18.759 51.95 19.603Q52.942 20.447 54.423 20.447Q55.666 20.447 56.643 19.869Q57.62 19.292 58.183 18.374L61.292 20.713Q60.345 22.194 58.509 23.097Q56.673 24 54.423 24Q52.083 24 50.277 22.919Q48.471 21.838 47.464 20.003Q46.458 18.167 46.458 15.946ZM58.213 14.377Q57.857 13.044 56.821 12.156Q55.785 11.268 54.363 11.268Q52.972 11.268 51.95 12.127Q50.929 12.985 50.603 14.377ZM64.223 18.848V11.623H62.062V8.218H64.223V5.109L68.221 4.694V8.218H71.478V11.623H68.221V18.641Q68.221 20.062 69.464 20.062H71.122V23.615H68.931Q66.592 23.615 65.408 22.46Q64.223 21.306 64.223 18.848Z"
+DOCS_D = "M78.478 2.888H85.88Q89.374 2.888 91.758 4.221Q94.141 5.553 95.326 7.892Q96.51 10.231 96.51 13.281Q96.51 16.301 95.326 18.641Q94.141 20.98 91.758 22.297Q89.374 23.615 85.88 23.615H78.478ZM85.377 19.884Q88.871 19.884 90.544 18.093Q92.217 16.301 92.217 13.281Q92.217 10.261 90.544 8.44Q88.871 6.619 85.377 6.619H82.623V19.884ZM97.25 15.946Q97.25 13.755 98.316 11.89Q99.382 10.024 101.248 8.943Q103.113 7.863 105.452 7.863Q107.791 7.863 109.657 8.943Q111.522 10.024 112.588 11.89Q113.654 13.755 113.654 15.946Q113.654 18.137 112.588 19.988Q111.522 21.838 109.657 22.919Q107.791 24 105.452 24Q103.113 24 101.248 22.919Q99.382 21.838 98.316 19.988Q97.25 18.137 97.25 15.946ZM105.452 20.358Q106.696 20.358 107.658 19.766Q108.62 19.174 109.139 18.167Q109.657 17.16 109.657 15.946Q109.657 14.732 109.124 13.725Q108.591 12.719 107.643 12.112Q106.696 11.505 105.452 11.505Q104.209 11.505 103.261 12.112Q102.314 12.719 101.781 13.725Q101.248 14.732 101.248 15.946Q101.248 17.16 101.766 18.167Q102.284 19.174 103.246 19.766Q104.209 20.358 105.452 20.358ZM114.394 15.917Q114.394 13.696 115.46 11.845Q116.526 9.995 118.421 8.914Q120.316 7.833 122.655 7.833Q124.699 7.833 126.327 8.588Q127.956 9.343 128.933 10.705L125.853 13.222Q125.32 12.423 124.462 11.949Q123.603 11.475 122.596 11.475Q121.353 11.475 120.405 12.082Q119.458 12.689 118.925 13.696Q118.392 14.703 118.392 15.917Q118.392 17.101 118.939 18.122Q119.487 19.144 120.464 19.751Q121.441 20.358 122.685 20.358Q123.781 20.358 124.58 19.884Q125.38 19.41 126.031 18.522L128.933 21.039Q126.623 24 122.33 24Q120.168 24 118.347 22.919Q116.526 21.838 115.46 19.973Q114.394 18.108 114.394 15.917ZM129.081 21.306 131.775 18.848Q133.463 20.743 135.388 20.743Q136.394 20.743 136.957 20.299Q137.52 19.855 137.52 19.144Q137.52 18.493 136.972 18.122Q136.424 17.752 134.707 17.338Q131.894 16.657 130.931 15.472Q129.969 14.288 129.969 12.541Q129.969 10.468 131.509 9.151Q133.048 7.833 135.713 7.833Q137.638 7.833 138.956 8.425Q140.273 9.017 141.428 10.498L138.526 12.719Q137.49 11.061 135.802 11.061Q134.943 11.061 134.41 11.401Q133.878 11.742 133.878 12.423Q133.878 12.896 134.277 13.237Q134.677 13.577 135.95 13.903Q139.118 14.732 140.288 15.946Q141.458 17.16 141.458 19.026Q141.458 20.417 140.673 21.557Q139.888 22.697 138.526 23.349Q137.164 24 135.476 24Q131.598 24 129.081 21.306Z"
+DOCS_FILL = "#575757"
+
+# Wordmark metrics (26-unit-high text frame): the "k" ascender is at 2, the "t" top at 4.694, the baseline at 23.615.
+TEXT_H = 26
+ASCENDER = 2
+BASELINE = 23.615
+TEXT_W = 71.478
+DOCS_W = 152
+MARK_D = BASELINE - ASCENDER         # mark diameter = ascender height, bottom on the baseline
+LOCKUP_GAP = 3.5                     # space between mark and text
+TEXT_X = MARK_D + LOCKUP_GAP         # where the text starts
+LOCKUP_W = TEXT_X + TEXT_W
+
+
+def lockup_body(fill, docs=False, docs_fill=DOCS_FILL):
+    mark = mark_path(MARK_D / 2, ASCENDER + MARK_D / 2, MARK_D / 2)
+    body = f'  <path fill="{fill}" d="{mark}"/>\n  <g transform="translate({f(TEXT_X)} 0)">\n    <path fill="{fill}" d="{TEXT_D}"/>\n'
+    if docs:
+        body += f'    <path fill="{docs_fill}" d="{DOCS_D}"/>\n'
+    return body + "  </g>"
+
+
+def lockup_svg(fill, docs=False):
+    return svg(lockup_body(fill, docs), DOCS_W + TEXT_X if docs else LOCKUP_W, TEXT_H)
+
+
+def mark_svg(fill, size=512, R=216):
+    return svg(f'  <path fill="{fill}" d="{mark_path(size / 2, size / 2, R)}"/>', size, size)
+
+
+def tile_svg(size=512, bg=INK, fg=WHITE, radius=0.22, mark=0.36):
+    return svg(
+        f'  <rect width="{size}" height="{size}" rx="{f(size * radius)}" fill="{bg}"/>\n'
+        f'  <path fill="{fg}" d="{mark_path(size / 2, size / 2, size * mark)}"/>',
+        size,
+        size,
+    )
+
+
+def wide_mark_svg(w, h, fill=WHITE, mark=0.3):
+    return svg(f'  <path fill="{fill}" d="{mark_path(w / 2, h / 2, h * mark)}"/>', w, h)
+
+
+def generate():
+    S, C, R = 512, 256, 216
+
+    # -- Brand folder: mark, lockups and the variation set --
+    write(os.path.join(BRAND, "tikket-mark.svg"), mark_svg(INK))
+    write(os.path.join(BRAND, "tikket-mark-white.svg"), mark_svg(WHITE))
+    write(os.path.join(BRAND, "tikket-lockup.svg"), lockup_svg(INK))
+    write(os.path.join(BRAND, "tikket-lockup-white.svg"), lockup_svg("#FAFAFA"))
+
+    V = os.path.join(BRAND, "variants")
+    mp = mark_path(C, C, R)
+    master = (
+        "  <defs>\n"
+        f'    <path id="slice" d="{long_slice(C, C, R, 30)}"/>\n'
+        f'    <path id="tri" d="{short_tri(C, C, R, 90)}"/>\n'
+        '    <g id="pair"><use href="#slice"/><use href="#tri"/></g>\n'
+        "  </defs>\n"
+        f'  <g fill="{INK}">\n'
+        '    <use href="#pair"/>\n'
+        f'    <use href="#pair" transform="rotate(120 {C} {C})"/>\n'
+        f'    <use href="#pair" transform="rotate(240 {C} {C})"/>\n'
+        "  </g>"
+    )
+    write(os.path.join(V, "01-mark.svg"), svg(master, S, S))
+    write(os.path.join(V, "02-mark-flat.svg"), svg(f'  <path fill="{INK}" d="{mp}"/>', S, S))
+    rr = 10
+    write(
+        os.path.join(V, "03-mark-rounded.svg"),
+        svg(f'  <path fill="{INK}" stroke="{INK}" stroke-width="{2 * rr}" stroke-linejoin="round" d="{mark_path(C, C, R - rr)}"/>', S, S),
+    )
+    write(
+        os.path.join(V, "04-mark-outline.svg"),
+        svg(f'  <path fill="none" stroke="{INK}" stroke-width="10" stroke-linejoin="round" d="{mark_path(C, C, R - 5)}"/>', S, S),
+    )
+    write(
+        os.path.join(V, "05-mark-badge.svg"),
+        svg(f'  <circle cx="{C}" cy="{C}" r="{C}" fill="{INK}"/>\n  <path fill="{WHITE}" d="{mark_path(C, C, R * 0.78)}"/>', S, S),
+    )
+    write(os.path.join(V, "06-mark-app-icon.svg"), tile_svg())
+    cols = ["#1F4FFF", "#FF4D4D", "#FFB400"]
+    tri = "\n".join(
+        f'  <path fill="{cols[i]}" d="{long_slice(C, C, R, LONG_ANGLES[i])}{short_tri(C, C, R, SHORT_ANGLES[i])}"/>'
+        for i in range(3)
+    )
+    write(os.path.join(V, "07-mark-tricolour.svg"), svg(tri, S, S))
+    write(
+        os.path.join(V, "08-mark-gradient.svg"),
+        svg(
+            '  <defs>\n    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">\n'
+            '      <stop offset="0" stop-color="#4F7CFF"/><stop offset="1" stop-color="#1A2BB8"/>\n'
+            f'    </linearGradient>\n  </defs>\n  <path fill="url(#g)" d="{mp}"/>',
+            S,
+            S,
+        ),
+    )
+    write(
+        os.path.join(V, "09-mark-duotone.svg"),
+        svg(
+            f'  <path fill="{INK}" d="{"".join(long_slice(C, C, R, a) for a in LONG_ANGLES)}"/>\n'
+            f'  <path fill="{INK}" fill-opacity="0.45" d="{"".join(short_tri(C, C, R, a) for a in SHORT_ANGLES)}"/>',
+            S,
+            S,
+        ),
+    )
+    write(os.path.join(V, "10-mark-compact.svg"), svg(f'  <path fill="{INK}" d="{mark_path(C, C, R, gap=0.2, half=18)}"/>', S, S))
+    write(
+        os.path.join(V, "11-mark-ring.svg"),
+        svg(f'  <circle cx="{C}" cy="{C}" r="{C - 8}" fill="none" stroke="{INK}" stroke-width="12"/>\n  <path fill="{INK}" d="{mark_path(C, C, R * 0.78)}"/>', S, S),
+    )
+    six = "".join(long_slice(C, C, R, a) for a in LONG_ANGLES) + "".join(long_slice(C, C, R, a, half=27) for a in SHORT_ANGLES)
+    write(os.path.join(V, "12-mark-six-slices.svg"), svg(f'  <path fill="{INK}" d="{six}"/>', S, S))
+
+    # -- apps/web/public: file names are kept so every existing reference keeps working --
+    write(os.path.join(WEB_PUBLIC, "cal-com-icon.svg"), mark_svg(INK))
+    write(os.path.join(WEB_PUBLIC, "cal-com-icon-white.svg"), mark_svg(INK))
+    write(os.path.join(WEB_PUBLIC, "safari-pinned-tab.svg"), mark_svg("#000000"))
+    write(os.path.join(WEB_PUBLIC, "calcom-logo-white-word.svg"), lockup_svg(INK))
+    write(os.path.join(WEB_PUBLIC, "cal-logo-word.svg"), lockup_svg(INK))
+    write(os.path.join(WEB_PUBLIC, "cal-logo-word-black.svg"), lockup_svg("#000000"))
+    write(os.path.join(WEB_PUBLIC, "cal-logo-word-dark.svg"), lockup_svg("#FAFAFA"))
+    write(os.path.join(WEB_PUBLIC, "calcom-white.svg"), lockup_svg(WHITE))
+
+    # -- apps/docs/public --
+    write(os.path.join(DOCS_PUBLIC, "cal-docs-logo.svg"), lockup_svg(INK, docs=True))
+    write(os.path.join(DOCS_PUBLIC, "cal-docs-logo-white.svg"), lockup_svg(WHITE, docs=True))
+
+    # -- Sources for the rasterised icons (rendered by render-icons.js) --
+    write(os.path.join(RASTER_SRC, "tile.svg"), tile_svg())
+    write(os.path.join(RASTER_SRC, "mstile-square.svg"), wide_mark_svg(512, 512, mark=0.3))
+    write(os.path.join(RASTER_SRC, "mstile-wide.svg"), wide_mark_svg(558, 270, mark=0.3))
+    write(os.path.join(RASTER_SRC, "email-logo.svg"), lockup_svg(INK))
+    print("SVG assets written")
+
+
+def build_ico():
+    from PIL import Image
+
+    sizes = [16, 32, 48]
+    frames = {s: Image.open(os.path.join(RASTER_SRC, f"favicon-{s}.png")).convert("RGBA") for s in sizes}
+    out = os.path.join(WEB_PUBLIC, "favicon.ico")
+    # Pillow derives every requested size from the largest frame, so hand it the 48px render.
+    frames[48].save(out, format="ICO", sizes=[(s, s) for s in sizes])
+    print("favicon.ico written")
+
+
+if __name__ == "__main__":
+    if "--ico" in sys.argv:
+        build_ico()
+    else:
+        generate()

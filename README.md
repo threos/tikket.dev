@@ -7,7 +7,10 @@
 <!-- PROJECT LOGO -->
 <p align="center">
   <a href="https://github.com/calcom/cal.diy">
-   <img src="https://user-images.githubusercontent.com/8019099/210054112-5955e812-a76e-4160-9ddd-58f2c72f1cce.png" alt="Logo">
+   <picture>
+     <source media="(prefers-color-scheme: dark)" srcset="docs/brand/tikket-lockup-white.svg">
+     <img src="docs/brand/tikket-lockup.svg" alt="Tikket" height="52">
+   </picture>
   </a>
 
   <h3 align="center">Cal.diy</h3>

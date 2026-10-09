@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" fill="none">
+  <defs>
+    <path id="slice" d="M256 256L464.64 200.095A216 216 0 0 0 408.735 103.265Z"/>
+    <path id="tri" d="M256 176.578L148.229 68.807A216 216 0 0 1 363.771 68.807Z"/>
+    <g id="pair"><use href="#slice"/><use href="#tri"/></g>
+  </defs>
+  <g fill="#292929">
+    <use href="#pair"/>
+    <use href="#pair" transform="rotate(120 256 256)"/>
+    <use href="#pair" transform="rotate(240 256 256)"/>
+  </g>
+</svg>
