@@ -1,0 +1,39 @@
+name: CI
+
+# Vercel builds skip the Next.js type check (see apps/web/next.config.ts), so this
+# workflow is where type errors get caught for every pull request and push to main.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  NODE_OPTIONS: --max-old-space-size=12288
+
+jobs:
+  type-check:
+    name: Type check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/yarn-install
+      - name: Configure TSC problem matcher
+        run: |
+          echo "::remove-matcher owner=tsc::"
+          echo "::add-matcher::.github/matchers/tsc-absolute.json"
+      - run: yarn type-check:ci
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/yarn-install
+      - run: yarn lint
