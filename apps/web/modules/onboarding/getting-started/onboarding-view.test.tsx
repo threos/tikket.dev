@@ -11,6 +11,7 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mocks.push, replace: vi.fn() }),
+  usePathname: () => "/onboarding/getting-started",
 }));
 
 vi.mock("posthog-js", () => ({ default: { capture: vi.fn() } }));
@@ -42,16 +43,18 @@ describe("OnboardingView", () => {
     mocks.push.mockReset();
   });
 
-  it.each<PlanType | null>(["personal", "team", "organization", null])(
-    "continues to personal onboarding when the selected plan is %s",
-    (plan) => {
-      mocks.selectedPlan = plan;
-      render(<OnboardingView userEmail="user@example.com" />);
+  it.each<PlanType | null>([
+    "personal",
+    "team",
+    "organization",
+    null,
+  ])("continues to personal onboarding when the selected plan is %s", (plan) => {
+    mocks.selectedPlan = plan;
+    render(<OnboardingView userEmail="user@example.com" />);
 
-      fireEvent.click(screen.getByTestId("onboarding-continue-btn"));
+    fireEvent.click(screen.getByTestId("onboarding-continue-btn"));
 
-      expect(mocks.push).toHaveBeenCalledWith("/onboarding/personal/settings");
-      expect(mocks.push).toHaveBeenCalledTimes(1);
-    }
-  );
+    expect(mocks.push).toHaveBeenCalledWith("/onboarding/personal/settings");
+    expect(mocks.push).toHaveBeenCalledTimes(1);
+  });
 });
