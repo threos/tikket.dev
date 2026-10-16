@@ -74,14 +74,10 @@ export const OnboardingView = ({ userEmail }: OnboardingViewProps) => {
         plan_type: selectedPlan,
       });
     }
+    // Cal.diy removed the team and organization onboarding pages, so personal is the only
+    // onboarding flow that exists. A persisted "team" or "organization" choice used to 404.
     startTransition(() => {
-      if (selectedPlan === "organization") {
-        router.push("/onboarding/organization/details");
-      } else if (selectedPlan === "team") {
-        router.push("/onboarding/teams/details");
-      } else if (selectedPlan === "personal") {
-        router.push("/onboarding/personal/settings");
-      }
+      router.push("/onboarding/personal/settings");
     });
   };
 
