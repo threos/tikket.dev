@@ -109,11 +109,7 @@ export const PersonalCalendarView = ({ userEmail }: PersonalCalendarViewProps) =
               {t("back")}
             </Button>
             <div className="flex items-center gap-2">
-              <Button
-                color="minimal"
-                className="rounded-[10px]"
-                onClick={handleSkip}
-                disabled={queryIntegrations.isPending || isSubmitting}>
+              <Button color="minimal" className="rounded-[10px]" onClick={handleSkip} disabled={isSubmitting}>
                 {t("onboarding_skip_for_now")}
               </Button>
               <Button
@@ -122,7 +118,7 @@ export const PersonalCalendarView = ({ userEmail }: PersonalCalendarViewProps) =
                 className="rounded-[10px]"
                 onClick={handleContinue}
                 loading={isSubmitting}
-                disabled={queryIntegrations.isPending || isSubmitting}>
+                disabled={isSubmitting}>
                 {t("continue")}
               </Button>
             </div>
